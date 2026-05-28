@@ -66,6 +66,10 @@ class MailAndPackagesCardEditor extends LitElement {
                 ${this._picker("UPS Packages", "ups_packages", this._ups_packages)}
                 ${this._picker("FedEx Packages", "fedex_packages", this._fedex_packages)}
                 ${this._picker("Amazon Packages", "amazon_packages", this._amazon_packages)}
+                ${this._picker("DHL Packages", "dhl_packages", this._dhl_packages)}
+                ${this._picker("DPD Packages", "dpd_packages", this._dpd_packages)}
+                ${this._picker("GLS Packages", "gls_packages", this._gls_packages)}
+                ${this._picker("Hermes Packages", "hermes_packages", this._hermes_packages)}
 
                 <div class="section-label">Bild / Kamera</div>
                 <div class="switch-row">
@@ -218,6 +222,10 @@ class MailAndPackagesCard extends LitElement {
         const ups_packages = this._config.ups_packages ? this.hass.states[this._config.ups_packages].state : false;
         const usps_packages = this._config.usps_packages ? this.hass.states[this._config.usps_packages].state : false;
         const amazon_packages = this._config.amazon_packages ? this.hass.states[this._config.amazon_packages].state : false;
+        const dhl_packages = this._config.dhl_packages ? this.hass.states[this._config.dhl_packages].state : false;
+        const dpd_packages = this._config.dpd_packages ? this.hass.states[this._config.dpd_packages].state : false;
+        const gls_packages = this._config.gls_packages ? this.hass.states[this._config.gls_packages].state : false;
+        const hermes_packages = this._config.hermes_packages ? this.hass.states[this._config.hermes_packages].state : false;
         const usps_mail = this._config.usps_mail ? this.hass.states[this._config.usps_mail].state : false;
 
         const mail_icon   = usps_mail > 0       ? 'mailbox-open-up'        : 'mailbox-outline';
