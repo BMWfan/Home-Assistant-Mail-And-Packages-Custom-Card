@@ -1,6 +1,6 @@
 {
   "name": "home-assistant-mail-and-packages-custom-card",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Custom Home Assistant card for Mail and Packages integration",
   "main": "dist/Home-Assistant-Mail-And-Packages-Custom-Card.js",
   "repository": {
