@@ -88,6 +88,14 @@ export class MailAndPackagesCardEditor extends LitElement {
                 ${this._picker("UPS Package Sensor", "ups_packages", this._ups_packages)}
                 ${this._picker("FedEx Package Sensor", "fedex_packages", this._fedex_packages)}
                 ${this._picker("Amazon Package Sensor", "amazon_packages", this._amazon_packages)}
+                ${this._picker("DHL Package Sensor", "dhl_packages", this._dhl_packages)}
+                ${this._picker("DPD Package Sensor", "dpd_packages", this._dpd_packages)}
+                ${this._picker("GLS Package Sensor", "gls_packages", this._gls_packages)}
+                ${this._picker("Hermes Package Sensor", "hermes_packages", this._hermes_packages)}
+                ${this._picker("DHL Package Sensor", "dhl_packages", this._dhl_packages)}
+                ${this._picker("DPD Package Sensor", "dpd_packages", this._dpd_packages)}
+                ${this._picker("GLS Package Sensor", "gls_packages", this._gls_packages)}
+                ${this._picker("Hermes Package Sensor", "hermes_packages", this._hermes_packages)}
 
                 <div class="section-label">Bild / Kamera</div>
                 <div class="switch-row">
