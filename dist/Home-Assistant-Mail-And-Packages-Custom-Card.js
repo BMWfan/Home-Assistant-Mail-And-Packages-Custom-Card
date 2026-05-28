@@ -31,15 +31,14 @@ class MailAndPackagesCardEditor extends LitElement {
 
     _picker(label, configValue, value, domain = "sensor") {
         return html`
-            <ha-entity-picker
-                label="${label}"
+            <ha-selector
+                .label="${label}"
                 .hass="${this.hass}"
                 .value="${value}"
                 .configValue="${configValue}"
-                .includeDomains="${[domain]}"
+                .selector="${{ entity: { domain } }}"
                 @value-changed="${this._valueChanged}"
-                allow-custom-entity
-            ></ha-entity-picker>`;
+            ></ha-selector>`;
     }
 
     render() {
