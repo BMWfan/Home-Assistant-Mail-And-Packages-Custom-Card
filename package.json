@@ -1,0 +1,12 @@
+{
+  "name": "home-assistant-mail-and-packages-custom-card",
+  "version": "0.1.1",
+  "description": "Custom Home Assistant card for Mail and Packages integration",
+  "main": "dist/Home-Assistant-Mail-And-Packages-Custom-Card.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card"
+  },
+  "author": "BMWfan",
+  "license": "MIT"
+}
