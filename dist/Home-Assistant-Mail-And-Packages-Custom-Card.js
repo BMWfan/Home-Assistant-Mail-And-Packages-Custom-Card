@@ -34,11 +34,18 @@ class MailAndPackagesCardEditor extends LitElement {
             <ha-selector
                 .label="${label}"
                 .hass="${this.hass}"
-                .value="${value}"
-                .configValue="${configValue}"
+                .value="${value || ""}"
                 .selector="${{ entity: { domain } }}"
-                @value-changed="${this._valueChanged}"
+                @value-changed="${(ev) => this._selectorChanged(configValue, ev.detail.value)}"
             ></ha-selector>`;
+    }
+
+    _selectorChanged(configValue, value) {
+        if (!this._config || !this.hass) return;
+        this._config = (value === "" || value === undefined || value === null)
+            ? (({ [configValue]: _, ...rest }) => rest)(this._config)
+            : { ...this._config, [configValue]: value };
+        fireEvent(this, "config-changed", { config: this._config });
     }
 
     render() {
@@ -85,9 +92,8 @@ class MailAndPackagesCardEditor extends LitElement {
         if (!this._config || !this.hass) return;
         const target = ev.target;
         const value = target.checked !== undefined ? target.checked : target.value;
-        if (this[`_${target.configValue}`] === value) return;
         if (target.configValue) {
-            this._config = value === ""
+            this._config = (value === "")
                 ? (({ [target.configValue]: _, ...rest }) => rest)(this._config)
                 : { ...this._config, [target.configValue]: value };
         }
