@@ -22,15 +22,8 @@ export class MailAndPackagesCardEditor extends LitElement {
     static get properties() {
         return {
             hass: {},
-            _config: {},
-            _pickerReady: {}
+            _config: {}
         };
-    }
-
-    async connectedCallback() {
-        super.connectedCallback();
-        await customElements.whenDefined("ha-entity-picker");
-        this._pickerReady = true;
     }
 
     setConfig(config) {
@@ -68,8 +61,8 @@ export class MailAndPackagesCardEditor extends LitElement {
     }
 
     render() {
-        if (!this.hass || !this._pickerReady) {
-            return html`<div class="loading">Loading...</div>`;
+        if (!this.hass) {
+            return html``;
         }
 
         return html`
@@ -160,10 +153,6 @@ export class MailAndPackagesCardEditor extends LitElement {
             .switch-row span {
                 font-size: 0.9em;
                 color: var(--primary-text-color);
-            }
-            .loading {
-                padding: 16px;
-                color: var(--secondary-text-color);
             }
         `;
     }
