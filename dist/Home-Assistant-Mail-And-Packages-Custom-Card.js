@@ -451,3 +451,11 @@ class MailAndPackagesCard extends LitElement {
 }
 
 customElements.define("mail-and-packages-card", MailAndPackagesCard);
+
+window.customCards = window.customCards || [];
+window.customCards.push({
+    type: "mail-and-packages-card",
+    name: "Mail and Packages",
+    description: "Displays mail and package delivery counts per carrier",
+    preview: false,
+});
