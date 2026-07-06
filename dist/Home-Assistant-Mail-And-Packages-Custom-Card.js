@@ -424,7 +424,13 @@ class MailAndPackagesCard extends LitElement {
       <ha-card>
         <div class="header" @click=${() => this._moreInfo(ents.updated)}>
           <div class="header-left">
-            <ha-icon icon="mdi:mailbox-outline"></ha-icon>
+            <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+              <path d="M12 4 21 8.5 12 13 3 8.5Z"></path>
+              <path d="M3 8.5V15l9 4.5V13"></path>
+              <path d="M21 8.5V15l-9 4.5"></path>
+              <path d="M7.5 6.25 16.5 10.75"></path>
+              <path d="M14 14.6l4.5-2v2.6l-4.5 2z" fill="currentColor" stroke="none"></path>
+            </svg>
             <span class="title">${cfg.name || t.title}</span>
           </div>
           <div class="header-right">
@@ -637,8 +643,11 @@ class MailAndPackagesCard extends LitElement {
         gap: 9px;
         min-width: 0;
       }
-      .header-left ha-icon {
+      .header-left svg.logo {
+        width: 24px;
+        height: 24px;
         color: var(--primary-color);
+        flex-shrink: 0;
       }
       .title {
         font-size: 1.05em;
