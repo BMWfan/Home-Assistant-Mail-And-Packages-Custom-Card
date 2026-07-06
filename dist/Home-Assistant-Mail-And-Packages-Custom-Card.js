@@ -353,7 +353,7 @@ class MailAndPackagesCard extends LitElement {
       const meta = carrierMeta("amazon");
       rows.push({
         key: "a-delivered",
-        badge: { ...meta, logo: null, short: "✓", bg: "var(--success-color, #4caf50)", fg: "#fff" },
+        badge: { ...meta, overlayCheck: true },
         title: "Amazon",
         statusText: t.delivered_chip,
         kind: "delivered",
@@ -501,10 +501,17 @@ class MailAndPackagesCard extends LitElement {
           @click=${clickable ? () => window.open(r.url, "_blank") : undefined}
         >
           ${r.badge.logo && CARRIER_LOGOS[r.badge.logo]
-            ? html`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            ? html`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="${r.badge.overlayCheck ? "blurred" : ""}">
                 <path d="${CARRIER_LOGOS[r.badge.logo]}"></path>
               </svg>`
             : r.badge.short}
+          ${r.badge.overlayCheck
+            ? html`<span class="overlay-check">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M21 7 9.55 18.45 3 11.9l1.9-1.9 4.65 4.63L19.1 5.1Z"></path>
+                </svg>
+              </span>`
+            : ""}
         </div>
         <div class="row-body">
           <div class="row-top" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>
@@ -735,7 +742,25 @@ class MailAndPackagesCard extends LitElement {
         height: 22px;
         display: block;
       }
+      .badge svg.blurred {
+        filter: blur(1.6px);
+        opacity: 0.45;
+      }
+      .overlay-check {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--success-color, #4caf50);
+      }
+      .overlay-check svg {
+        width: 17px;
+        height: 17px;
+        filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.55));
+      }
       .badge {
+        position: relative;
         width: 38px;
         height: 38px;
         border-radius: 50%;
