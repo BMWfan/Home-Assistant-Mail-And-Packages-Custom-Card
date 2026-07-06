@@ -4,7 +4,7 @@ A modern shipment-list card for the [Mail and Packages](https://github.com/BMWfa
 
 <img src="img/card-preview.png" alt="Card preview: shipment list with delivery code, driver photo and letter previews (top), empty state (bottom)" width="470" />
 
-*Top: full card with letters expanded (gray boxes are placeholder images — live they show the actual letter scans and driver photo). Bottom: empty state.*
+*One card, two states: with shipments and letters (top) and when nothing is pending (bottom). Gray boxes are placeholder images — live they show the actual letter scans and driver photo.*
 
 Instead of a grid of per-carrier counters, the card shows what actually matters:
 
