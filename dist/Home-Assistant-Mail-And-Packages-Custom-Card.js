@@ -743,8 +743,8 @@ class MailAndPackagesCard extends LitElement {
         display: block;
       }
       .badge svg.blurred {
-        filter: blur(1.6px);
-        opacity: 0.45;
+        filter: blur(1px);
+        opacity: 0.65;
       }
       .overlay-check {
         position: absolute;
