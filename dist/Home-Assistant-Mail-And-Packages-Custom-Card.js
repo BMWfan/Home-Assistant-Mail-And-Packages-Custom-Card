@@ -325,6 +325,10 @@ class MailAndPackagesCard extends LitElement {
     const otp = this._st(ents.otp);
     const otpDetails = (otp && otp.attributes.details) || [];
     const otpCodes = (otp && otp.attributes.code) || [];
+    const trackingMap = {
+      ...((deliveredState && deliveredState.attributes.tracking) || {}),
+      ...((amazon && amazon.attributes.tracking) || {}),
+    };
     let orders = (amazon && amazon.attributes.order) || [];
     if (!Array.isArray(orders)) orders = [orders].filter(Boolean);
     const matchedCodes = new Set();
@@ -341,7 +345,7 @@ class MailAndPackagesCard extends LitElement {
         event: `${t.order} ${order}`,
         location: "",
         time: "",
-        number: null,
+        number: trackingMap[order] || null,
         url: order ? orderUrl(order) : meta.url(),
         code: match ? match.code : null,
       });
@@ -376,7 +380,7 @@ class MailAndPackagesCard extends LitElement {
               : `${deliveredCount}×`,
           location: "",
           time: "",
-          number: null,
+          number: order ? trackingMap[order] || null : null,
           url: order ? orderUrl(order) : meta.url(),
           photo: i === 0 ? photo : null,
           photoEntity: ents.amazon_camera,
@@ -542,7 +546,7 @@ class MailAndPackagesCard extends LitElement {
             ? html`<div class="row-meta">
                 ${r.location ? html`<ha-icon icon="mdi:map-marker-outline"></ha-icon><span>${r.location}</span>` : ""}
                 ${r.time ? html`<span>${r.time}</span>` : ""}
-                ${r.number ? html`<span class="mono">…${String(r.number).slice(-10)}</span>` : ""}
+                ${r.number ? html`<span class="mono">${r.number}</span>` : ""}
               </div>`
             : ""}
           ${r.code
@@ -846,8 +850,9 @@ class MailAndPackagesCard extends LitElement {
       }
       .row-meta {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 6px;
+        gap: 3px 6px;
         font-size: 0.7em;
         color: var(--secondary-text-color);
         opacity: 0.8;
