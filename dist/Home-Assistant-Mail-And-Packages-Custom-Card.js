@@ -535,18 +535,20 @@ class MailAndPackagesCard extends LitElement {
             : ""}
         </div>
         <div class="row-body">
-          <div class="row-top" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>
-            <span class="row-title">${r.title}</span>
+          <div class="row-top">
+            <span class="row-title" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.title}</span>
+            ${r.number
+              ? html`<span class="row-num mono" title="Sendungsverfolgung öffnen" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.number}</span>`
+              : ""}
             <span class="status ${r.kind}">${r.statusText}</span>
           </div>
           ${r.event
             ? html`<div class="row-event ${clickable ? "linky" : ""}" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.event}</div>`
             : ""}
-          ${r.location || r.time || r.number
+          ${r.location || r.time
             ? html`<div class="row-meta">
                 ${r.location ? html`<ha-icon icon="mdi:map-marker-outline"></ha-icon><span>${r.location}</span>` : ""}
                 ${r.time ? html`<span>${r.time}</span>` : ""}
-                ${r.number ? html`<span class="mono">${r.number}</span>` : ""}
               </div>`
             : ""}
           ${r.code
@@ -805,12 +807,30 @@ class MailAndPackagesCard extends LitElement {
         justify-content: space-between;
         align-items: center;
         gap: 8px;
+      }
+      .row-title {
         cursor: pointer;
       }
       .row-title {
         font-size: 0.88em;
         font-weight: 500;
         color: var(--primary-text-color);
+        flex-shrink: 0;
+      }
+      .row-num {
+        flex: 1;
+        min-width: 0;
+        margin-left: 8px;
+        font-size: 0.72em;
+        color: var(--secondary-text-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+      }
+      .row-num:hover {
+        text-decoration: underline;
+        color: var(--primary-color);
       }
       .status {
         font-size: 0.7em;
