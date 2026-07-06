@@ -315,6 +315,13 @@ class MailAndPackagesCard extends LitElement {
 
     // Amazon: arriving orders + optional per-order delivery code.
     const amazon = this._st(ents.amazon);
+    const deliveredState = this._st(ents.amazon_delivered);
+    const amazonDomain =
+      (amazon && amazon.attributes.domain) ||
+      (deliveredState && deliveredState.attributes.domain) ||
+      (t === STRINGS.de ? "amazon.de" : "amazon.com");
+    const orderUrl = (o) =>
+      `https://www.${amazonDomain}/gp/your-account/order-details?orderID=${o}`;
     const otp = this._st(ents.otp);
     const otpDetails = (otp && otp.attributes.details) || [];
     const otpCodes = (otp && otp.attributes.code) || [];
@@ -335,7 +342,7 @@ class MailAndPackagesCard extends LitElement {
         location: "",
         time: "",
         number: null,
-        url: meta.url(),
+        url: order ? orderUrl(order) : meta.url(),
         code: match ? match.code : null,
       });
     }
@@ -346,24 +353,34 @@ class MailAndPackagesCard extends LitElement {
     }
     if (!otpDetails.length) for (const c of otpCodes) unmatched.push(c);
 
-    // Amazon delivered today (+ driver photo).
+    // Amazon delivered today: one row per order id (+ driver photo on the first).
     const deliveredCount = this._num(ents.amazon_delivered);
     if (deliveredCount > 0) {
       const cam = this._st(ents.amazon_camera);
       const meta = carrierMeta("amazon");
-      rows.push({
-        key: "a-delivered",
-        badge: { ...meta, overlayCheck: true },
-        title: "Amazon",
-        statusText: t.delivered_chip,
-        kind: "delivered",
-        event: deliveredCount === 1 ? "" : `${deliveredCount}×`,
-        location: "",
-        time: "",
-        number: null,
-        url: meta.url(),
-        photo: cam && cam.attributes.entity_picture ? cam.attributes.entity_picture : null,
-        photoEntity: ents.amazon_camera,
+      const photo = cam && cam.attributes.entity_picture ? cam.attributes.entity_picture : null;
+      let deliveredOrders = (deliveredState && deliveredState.attributes.order) || [];
+      if (!Array.isArray(deliveredOrders)) deliveredOrders = [deliveredOrders].filter(Boolean);
+      const list = deliveredOrders.length ? deliveredOrders : [null];
+      list.forEach((order, i) => {
+        rows.push({
+          key: `a-del-${order || i}`,
+          badge: { ...meta, overlayCheck: true },
+          title: "Amazon",
+          statusText: t.delivered_chip,
+          kind: "delivered",
+          event: order
+            ? `${t.order} ${order}`
+            : deliveredCount === 1
+              ? ""
+              : `${deliveredCount}×`,
+          location: "",
+          time: "",
+          number: null,
+          url: order ? orderUrl(order) : meta.url(),
+          photo: i === 0 ? photo : null,
+          photoEntity: ents.amazon_camera,
+        });
       });
     }
     return { rows, unmatched };
@@ -518,7 +535,9 @@ class MailAndPackagesCard extends LitElement {
             <span class="row-title">${r.title}</span>
             <span class="status ${r.kind}">${r.statusText}</span>
           </div>
-          ${r.event ? html`<div class="row-event">${r.event}</div>` : ""}
+          ${r.event
+            ? html`<div class="row-event ${clickable ? "linky" : ""}" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.event}</div>`
+            : ""}
           ${r.location || r.time || r.number
             ? html`<div class="row-meta">
                 ${r.location ? html`<ha-icon icon="mdi:map-marker-outline"></ha-icon><span>${r.location}</span>` : ""}
@@ -817,6 +836,13 @@ class MailAndPackagesCard extends LitElement {
         font-size: 0.78em;
         color: var(--secondary-text-color);
         margin-top: 2px;
+      }
+      .row-event.linky {
+        cursor: pointer;
+      }
+      .row-event.linky:hover {
+        text-decoration: underline;
+        color: var(--primary-color);
       }
       .row-meta {
         display: flex;
