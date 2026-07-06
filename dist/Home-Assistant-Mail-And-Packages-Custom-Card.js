@@ -924,22 +924,19 @@ class MailAndPackagesCard extends LitElement {
         flex-shrink: 0;
       }
       .letters-grid {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
         gap: 8px;
         padding: 0 16px 12px;
-        flex-wrap: wrap;
       }
       .letter {
-        flex: 1;
-        min-width: 90px;
-        max-width: 140px;
         display: flex;
         flex-direction: column;
         gap: 3px;
       }
       .letter img {
         width: 100%;
-        aspect-ratio: 3/2;
+        height: 68px;
         object-fit: cover;
         border-radius: 6px;
         cursor: pointer;
@@ -952,10 +949,10 @@ class MailAndPackagesCard extends LitElement {
         text-align: center;
       }
       .letter.wide {
-        max-width: none;
+        grid-column: 1 / -1;
         align-items: center;
         justify-content: center;
-        aspect-ratio: 5/2;
+        height: 76px;
         border: 1px dashed var(--divider-color);
         border-radius: 6px;
         cursor: pointer;
