@@ -40,6 +40,7 @@ const STRINGS = {
   de: {
     title: "Post & Pakete",
     in_transit: "unterwegs",
+    out_for_delivery: "in Zustellung",
     delivered_today: "heute",
     letters: "Briefe",
     letters_today: (n) => (n === 1 ? "1 Brief kommt heute" : `${n} Briefe kommen heute`),
@@ -78,6 +79,7 @@ const STRINGS = {
   en: {
     title: "Mail & Packages",
     in_transit: "in transit",
+    out_for_delivery: "out for delivery",
     delivered_today: "today",
     letters: "letters",
     letters_today: (n) => (n === 1 ? "1 letter arriving today" : `${n} letters arriving today`),
@@ -415,6 +417,7 @@ class MailAndPackagesCard extends LitElement {
     const letterCount = letters.length || this._num(ents.letters);
 
     const { rows, unmatched } = this._shipments(ents, t);
+    const outCount = rows.filter((r) => r.kind === "out").length;
     const hub = this._st(ents.hub);
     const hubCodes = (hub && hub.attributes.code) || [];
 
@@ -476,6 +479,11 @@ class MailAndPackagesCard extends LitElement {
                 ${transit > 0
                   ? html`<span class="chip transit" @click=${() => this._moreInfo(ents.transit)}>
                       <ha-icon icon="mdi:truck-delivery-outline"></ha-icon>${transit} ${t.in_transit}
+                    </span>`
+                  : ""}
+                ${outCount > 0
+                  ? html`<span class="chip out" @click=${() => this._moreInfo(ents.universal || ents.transit)}>
+                      <ha-icon icon="mdi:truck-fast-outline"></ha-icon>${outCount} ${t.out_for_delivery}
                     </span>`
                   : ""}
                 ${delivered > 0
@@ -753,6 +761,10 @@ class MailAndPackagesCard extends LitElement {
       .chip.transit {
         background: color-mix(in srgb, var(--info-color, #039be5) 14%, transparent);
         color: var(--info-color, #0277bd);
+      }
+      .chip.out {
+        background: color-mix(in srgb, var(--warning-color, #ff9800) 14%, transparent);
+        color: var(--warning-color, #b26a00);
       }
       .chip.delivered {
         background: color-mix(in srgb, var(--success-color, #4caf50) 14%, transparent);
