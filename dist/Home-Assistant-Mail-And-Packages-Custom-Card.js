@@ -44,6 +44,8 @@ const STRINGS = {
     delivered_today: "heute",
     letters: "Briefe",
     letters_today: (n) => (n === 1 ? "1 Brief kommt heute" : `${n} Briefe kommen heute`),
+    letters_tomorrow: (n) => (n === 1 ? "1 Brief kommt morgen" : `${n} Briefe kommen morgen`),
+    letters_announced: (n) => (n === 1 ? "1 Brief angekündigt" : `${n} Briefe angekündigt`),
     no_shipments: "Keine Sendungen unterwegs",
     all_quiet: "Alles ruhig – kein Paket, kein Brief.",
     order: "Bestellung",
@@ -83,6 +85,8 @@ const STRINGS = {
     delivered_today: "today",
     letters: "letters",
     letters_today: (n) => (n === 1 ? "1 letter arriving today" : `${n} letters arriving today`),
+    letters_tomorrow: (n) => (n === 1 ? "1 letter arriving tomorrow" : `${n} letters arriving tomorrow`),
+    letters_announced: (n) => (n === 1 ? "1 letter announced" : `${n} letters announced`),
     no_shipments: "No shipments in transit",
     all_quiet: "All quiet – no packages, no letters.",
     order: "Order",
@@ -590,6 +594,14 @@ class MailAndPackagesCard extends LitElement {
   _renderLetters(letters, count, ents, t) {
     const withImages = letters.filter((l) => l && l.image);
     const expandable = withImages.length > 0 || Boolean(ents.dhl_camera);
+    // Letters without a date count as "today" so the wording only changes
+    // when we positively know a letter arrives later.
+    const days = letters.filter(Boolean).map((l) => (l.date ? this._letterDate(l.date) : t.today));
+    const title = !days.length || days.every((d) => d === t.today)
+      ? t.letters_today(count)
+      : days.every((d) => d === t.tomorrow)
+        ? t.letters_tomorrow(count)
+        : t.letters_announced(count);
     return html`
       <div class="letters">
         <div
@@ -600,7 +612,7 @@ class MailAndPackagesCard extends LitElement {
           }}
         >
           <ha-icon icon="mdi:email-outline"></ha-icon>
-          <span class="letters-title">${t.letters_today(count)}</span>
+          <span class="letters-title">${title}</span>
           ${expandable ? html`<ha-icon class="chev" icon="${this._lettersOpen ? "mdi:chevron-up" : "mdi:chevron-down"}"></ha-icon>` : ""}
         </div>
         ${this._lettersOpen && expandable
