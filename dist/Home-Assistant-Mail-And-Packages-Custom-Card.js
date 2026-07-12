@@ -46,6 +46,7 @@ const STRINGS = {
     letters_today: (n) => (n === 1 ? "1 Brief kommt heute" : `${n} Briefe kommen heute`),
     letters_tomorrow: (n) => (n === 1 ? "1 Brief kommt morgen" : `${n} Briefe kommen morgen`),
     letters_announced: (n) => (n === 1 ? "1 Brief angekündigt" : `${n} Briefe angekündigt`),
+    history: "Historie",
     no_shipments: "Keine Sendungen unterwegs",
     all_quiet: "Alles ruhig – kein Paket, kein Brief.",
     order: "Bestellung",
@@ -87,6 +88,7 @@ const STRINGS = {
     letters_today: (n) => (n === 1 ? "1 letter arriving today" : `${n} letters arriving today`),
     letters_tomorrow: (n) => (n === 1 ? "1 letter arriving tomorrow" : `${n} letters arriving tomorrow`),
     letters_announced: (n) => (n === 1 ? "1 letter announced" : `${n} letters announced`),
+    history: "History",
     no_shipments: "No shipments in transit",
     all_quiet: "All quiet – no packages, no letters.",
     order: "Order",
@@ -162,7 +164,7 @@ const STATUS_KIND = {
 // ── Card ─────────────────────────────────────────────────────────────────────
 class MailAndPackagesCard extends LitElement {
   static get properties() {
-    return { _config: {}, hass: {}, _lettersOpen: {}, _lightbox: {}, _copied: {} };
+    return { _config: {}, hass: {}, _lettersOpen: {}, _historyOpen: {}, _lightbox: {}, _copied: {} };
   }
 
   static getConfigElement() {
@@ -176,6 +178,7 @@ class MailAndPackagesCard extends LitElement {
   setConfig(config) {
     this._config = config || {};
     this._lettersOpen = Boolean(this._config.letters_expanded);
+    this._historyOpen = Boolean(this._config.history_expanded);
   }
 
   // ── discovery ──────────────────────────────────────────────────────────
@@ -197,6 +200,7 @@ class MailAndPackagesCard extends LitElement {
       else if (oid.includes("amazon_packages_delivered")) found.amazon_delivered = id;
       else if (oid.includes("amazon_packages")) found.amazon = id;
       else if (oid.includes("dhl_letter") || oid.includes("dhl_brief")) found.letters = id;
+      else if (oid.includes("packages_history")) found.history = id;
       else if (oid.includes("packages_delivered")) found.delivered = id;
       else if (oid.includes("packages_in_transit")) found.transit = id;
       else if (oid.includes("mail_updated")) found.updated = id;
@@ -219,7 +223,7 @@ class MailAndPackagesCard extends LitElement {
       for (const [k, v] of Object.entries(guess)) if (this.hass.states[v]) found[k] = v;
     }
     // Explicit config overrides always win.
-    for (const k of ["updated", "universal", "transit", "delivered", "letters", "amazon", "amazon_delivered", "otp", "hub", "scan", "amazon_camera", "dhl_camera"]) {
+    for (const k of ["updated", "universal", "transit", "delivered", "letters", "history", "amazon", "amazon_delivered", "otp", "hub", "scan", "amazon_camera", "dhl_camera"]) {
       if (this._config[k]) found[k] = this._config[k];
     }
     this._entCache = found;
@@ -412,6 +416,7 @@ class MailAndPackagesCard extends LitElement {
     const showChips = cfg.show_summary !== false;
     const showShipments = cfg.show_shipments !== false;
     const showLetters = cfg.show_letters !== false;
+    const showHistory = cfg.show_history !== false;
 
     const updatedState = this._st(ents.updated);
     const transit = this._num(ents.transit);
@@ -419,6 +424,9 @@ class MailAndPackagesCard extends LitElement {
     const lettersState = this._st(ents.letters);
     const letters = (lettersState && lettersState.attributes.letters) || [];
     const letterCount = letters.length || this._num(ents.letters);
+    const historyState = this._st(ents.history);
+    const history = (historyState && historyState.attributes.history) || [];
+    const historyCount = history.length || this._num(ents.history);
 
     const { rows, unmatched } = this._shipments(ents, t);
     const outCount = rows.filter((r) => r.kind === "out").length;
@@ -520,6 +528,8 @@ class MailAndPackagesCard extends LitElement {
           : ""}
 
         ${showLetters && letterCount > 0 ? this._renderLetters(letters, letterCount, ents, t) : ""}
+
+        ${showHistory && ents.history && historyCount > 0 ? this._renderHistory(history, historyCount, ents, t) : ""}
 
         ${this._lightbox
           ? html`<div class="lightbox" @click=${() => (this._lightbox = null)}>
@@ -629,6 +639,80 @@ class MailAndPackagesCard extends LitElement {
                 : html`<div class="letter wide" @click=${() => this._moreInfo(ents.dhl_camera)}>
                     <ha-icon icon="mdi:image-outline"></ha-icon>
                   </div>`}
+            </div>`
+          : ""}
+      </div>
+    `;
+  }
+
+  _historyDate(raw) {
+    const t = this._t();
+    if (!raw) return "";
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return String(raw);
+    const today = new Date();
+    const diff = Math.round((d.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0)) / 86400000);
+    if (diff === 0) return t.today;
+    if (diff === -1) return t.yesterday;
+    return new Date(raw).toLocaleDateString(this.hass.locale?.language || "de", { weekday: "short", day: "numeric", month: "short" });
+  }
+
+  _renderHistoryItem(item, t) {
+    const meta = carrierMeta(item.carrier);
+    const label = item.number || item.order || "";
+    const clickable = Boolean(item.number || item.order);
+    const open = clickable ? () => window.open(meta.url(item.number), "_blank") : undefined;
+    return html`
+      <div class="history-row">
+        <div class="history-badge" style="background:${meta.bg};color:${meta.fg}" @click=${open}>
+          ${meta.logo && CARRIER_LOGOS[meta.logo]
+            ? html`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="${CARRIER_LOGOS[meta.logo]}"></path>
+              </svg>`
+            : meta.short}
+        </div>
+        <div class="history-info">
+          <span class="history-carrier">${meta.label}</span>
+          <span class="history-number mono" @click=${open}>${label}</span>
+        </div>
+        <span class="history-check"><ha-icon icon="mdi:check-circle-outline"></ha-icon>${t.status.Delivered}</span>
+      </div>
+    `;
+  }
+
+  _renderHistory(history, count, ents, t) {
+    const groups = [];
+    let current = null;
+    for (const item of history) {
+      if (!item) continue;
+      if (!current || current.date !== item.delivered) {
+        current = { date: item.delivered, items: [] };
+        groups.push(current);
+      }
+      current.items.push(item);
+    }
+    return html`
+      <div class="history">
+        <div
+          class="history-head"
+          @click=${() => {
+            this._historyOpen = !this._historyOpen;
+          }}
+        >
+          <ha-icon icon="mdi:history"></ha-icon>
+          <span class="history-title">${t.history} · ${count}</span>
+          <ha-icon class="chev" icon="${this._historyOpen ? "mdi:chevron-up" : "mdi:chevron-down"}"></ha-icon>
+        </div>
+        ${this._historyOpen
+          ? html`<div class="history-body">
+              ${groups.map(
+                (g) => html`
+                  <div class="history-group">
+                    <div class="history-date">${this._historyDate(g.date)}</div>
+                    ${g.items.map((item) => this._renderHistoryItem(item, t))}
+                  </div>
+                `
+              )}
             </div>`
           : ""}
       </div>
@@ -1016,6 +1100,95 @@ class MailAndPackagesCard extends LitElement {
         cursor: pointer;
       }
 
+      .history {
+        border-top: 1px solid var(--divider-color);
+        background: var(--secondary-background-color);
+      }
+      .history-head {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 10px 16px;
+        cursor: pointer;
+      }
+      .history-head ha-icon {
+        --mdc-icon-size: 18px;
+        color: var(--secondary-text-color);
+      }
+      .history-title {
+        flex: 1;
+        font-size: 0.85em;
+        color: var(--primary-text-color);
+      }
+      .history-body {
+        padding: 0 16px 12px;
+      }
+      .history-group + .history-group {
+        margin-top: 10px;
+      }
+      .history-date {
+        font-size: 0.68em;
+        color: var(--secondary-text-color);
+        text-transform: capitalize;
+        margin-bottom: 4px;
+      }
+      .history-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 5px 0;
+      }
+      .history-badge {
+        position: relative;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6em;
+        font-weight: 700;
+        flex-shrink: 0;
+        cursor: pointer;
+        user-select: none;
+      }
+      .history-badge svg {
+        width: 15px;
+        height: 15px;
+        display: block;
+      }
+      .history-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .history-carrier {
+        font-size: 0.78em;
+        color: var(--primary-text-color);
+        flex-shrink: 0;
+      }
+      .history-number {
+        font-size: 0.72em;
+        color: var(--secondary-text-color);
+        cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .history-check {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 0.68em;
+        color: var(--success-color, #4caf50);
+        flex-shrink: 0;
+      }
+      .history-check ha-icon {
+        --mdc-icon-size: 14px;
+      }
+
       .lightbox {
         position: fixed;
         inset: 0;
@@ -1088,6 +1261,14 @@ class MailAndPackagesCardEditor extends LitElement {
             @change=${(e) => this._set("letters_expanded", e.target.checked ? true : undefined)}
           ></ha-switch>
           <span>${de ? "Briefe standardmäßig aufgeklappt" : "Letters expanded by default"}</span>
+        </div>
+        ${this._toggle(de ? "Historie anzeigen" : "Show history", "show_history")}
+        <div class="switch-row">
+          <ha-switch
+            .checked=${this._config.history_expanded === true}
+            @change=${(e) => this._set("history_expanded", e.target.checked ? true : undefined)}
+          ></ha-switch>
+          <span>${de ? "Historie standardmäßig aufgeklappt" : "History expanded by default"}</span>
         </div>
       </div>
     `;
