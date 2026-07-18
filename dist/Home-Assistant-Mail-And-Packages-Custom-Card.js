@@ -67,7 +67,7 @@ const STRINGS = {
     yesterday: "gestern",
     delivered_chip: "Heute zugestellt",
     delay: "Verzögerung gemeldet",
-    timeline_toggle: "Sendungsverlauf anzeigen",
+    timeline_details: "Details",
     status: {
       NotFound: "Angekündigt",
       InfoReceived: "Angekündigt",
@@ -111,7 +111,7 @@ const STRINGS = {
     yesterday: "yesterday",
     delivered_chip: "Delivered today",
     delay: "Delay reported",
-    timeline_toggle: "Show shipment history",
+    timeline_details: "Details",
     status: {
       NotFound: "Announced",
       InfoReceived: "Announced",
@@ -153,6 +153,15 @@ const carrierMeta = (key) =>
   };
 
 // Status string -> semantic bucket used for chip colors.
+// Coarse next-milestone lookup for the timeline's "current position" node --
+// keyed by the row's STATUS_KIND bucket (not the raw 17track status string),
+// since that's already the granularity the card tracks per row.
+const NEXT_MILESTONE_STATUS = {
+  announced: "InTransit",
+  transit: "OutForDelivery",
+  out: "Delivered",
+};
+
 const STATUS_KIND = {
   NotFound: "announced",
   InfoReceived: "announced",
@@ -601,25 +610,21 @@ class MailAndPackagesCard extends LitElement {
                 : ""}
             </div>
             <div class="row-side">
-              <div class="row-side-top">
-                <span class="status ${r.kind}">${r.statusText}</span>
-                ${r.history.length
-                  ? html`<button
-                      class="hist-toggle"
-                      aria-label="${t.timeline_toggle}"
-                      @click=${() => this._toggleTimeline(r.number)}
-                    >
-                      <ha-icon icon="${this._openTimelines.has(r.number) ? "mdi:chevron-up" : "mdi:timeline-clock-outline"}"></ha-icon>
-                    </button>`
-                  : ""}
-              </div>
+              <span class="status ${r.kind}">${r.statusText}</span>
               ${r.eta ? html`<span class="row-eta"><ha-icon icon="mdi:clock-outline"></ha-icon>${t.eta_by(r.eta)}</span>` : ""}
             </div>
           </div>
-          ${r.location || r.time
+          ${r.location || r.time || r.history.length
             ? html`<div class="row-meta">
                 ${r.location ? html`<ha-icon icon="mdi:map-marker-outline"></ha-icon><span>${r.location}</span>` : ""}
                 ${r.time ? html`<span>${r.time}</span>` : ""}
+                ${r.history.length
+                  ? html`${r.time || r.location ? html`<span> - </span>` : ""}<span
+                      class="meta-link"
+                      @click=${() => this._toggleTimeline(r.number)}
+                      >${t.timeline_details}</span
+                    >`
+                  : ""}
               </div>`
             : ""}
           ${r.history.length && this._openTimelines.has(r.number) ? this._renderTimeline(r, t) : ""}
@@ -669,8 +674,10 @@ class MailAndPackagesCard extends LitElement {
   // checkpoint, so this is an interpolation, not another real data point.
   _renderTimeline(r, t) {
     const delivered = r.kind === "delivered";
+    const nextStatus = NEXT_MILESTONE_STATUS[r.kind];
+    const showFuture = !delivered && Boolean(nextStatus);
     let fill = 0;
-    if (!delivered && r.estimatedDelivery && r.history.length) {
+    if (showFuture && r.estimatedDelivery && r.history.length) {
       const last = new Date(r.history[0].time).getTime();
       const eta = new Date(r.estimatedDelivery).getTime();
       if (Number.isFinite(last) && Number.isFinite(eta) && eta > last) {
@@ -679,11 +686,11 @@ class MailAndPackagesCard extends LitElement {
     }
     return html`
       <div class="timeline">
-        ${!delivered
+        ${showFuture
           ? html`<div class="tl-item tl-virtual" style="--tl-fill:${fill}%">
               <span class="tl-dot tl-dot-pulse"></span>
               <div class="tl-row">
-                <span class="tl-date">${r.eta ? t.eta_by(r.eta) : r.statusText}</span>
+                <span class="tl-date">${r.eta ? t.eta_by(r.eta) : t.status[nextStatus]}</span>
               </div>
             </div>`
           : ""}
@@ -1043,11 +1050,6 @@ class MailAndPackagesCard extends LitElement {
         gap: 3px;
         flex-shrink: 0;
       }
-      .row-side-top {
-        display: flex;
-        align-items: center;
-        gap: 2px;
-      }
       .row-eta {
         display: inline-flex;
         align-items: center;
@@ -1136,22 +1138,15 @@ class MailAndPackagesCard extends LitElement {
         font-family: var(--code-font-family, monospace);
       }
 
-      .hist-toggle {
-        border: none;
-        background: none;
-        padding: 2px;
-        margin: 0;
-        color: var(--secondary-text-color);
+      .meta-link {
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        line-height: 0;
+        color: var(--secondary-text-color);
+        text-decoration: underline dotted;
+        text-underline-offset: 2px;
       }
-      .hist-toggle:hover {
+      .meta-link:hover {
         color: var(--primary-color);
-      }
-      .hist-toggle ha-icon {
-        --mdc-icon-size: 16px;
+        text-decoration-color: currentColor;
       }
 
       .timeline {
