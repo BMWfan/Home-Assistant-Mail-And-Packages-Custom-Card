@@ -257,17 +257,28 @@ class MailAndPackagesCard extends LitElement {
     return t.updated_d(Math.round(mins / 1440));
   }
 
+  // DHL's letter-advice API returns dates as "DD.MM.YYYY" (German order).
+  // Handing that straight to `new Date(...)` gets misread as US MM.DD.YYYY
+  // by the engine's lenient fallback parser (e.g. "09.07.2026" -> "7 Sept"
+  // instead of "9 Jul") -- parse the day/month explicitly instead of
+  // trusting the ambiguous fallback.
+  _parseLetterDate(raw) {
+    const m = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(String(raw).trim());
+    if (m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+    return new Date(raw);
+  }
+
   _letterDate(raw) {
     const t = this._t();
     if (!raw) return "";
-    const d = new Date(raw);
+    const d = this._parseLetterDate(raw);
     if (Number.isNaN(d.getTime())) return String(raw);
     const today = new Date();
     const diff = Math.round((d.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0)) / 86400000);
     if (diff === 0) return t.today;
     if (diff === 1) return t.tomorrow;
     if (diff === -1) return t.yesterday;
-    return new Date(raw).toLocaleDateString(this.hass.locale?.language || "de", { day: "numeric", month: "short" });
+    return this._parseLetterDate(raw).toLocaleDateString(this.hass.locale?.language || "de", { day: "numeric", month: "short" });
   }
 
   // ── actions ────────────────────────────────────────────────────────────
