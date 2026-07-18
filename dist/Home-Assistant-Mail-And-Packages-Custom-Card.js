@@ -42,6 +42,7 @@ const STRINGS = {
     in_transit: "unterwegs",
     out_for_delivery: "in Zustellung",
     delivered_today: "heute",
+    eta_by: (t) => `bis ${t} Uhr`,
     letters: "Briefe",
     letters_today: (n) => (n === 1 ? "1 Brief kommt heute" : `${n} Briefe kommen heute`),
     letters_tomorrow: (n) => (n === 1 ? "1 Brief kommt morgen" : `${n} Briefe kommen morgen`),
@@ -84,6 +85,7 @@ const STRINGS = {
     in_transit: "in transit",
     out_for_delivery: "out for delivery",
     delivered_today: "today",
+    eta_by: (t) => `by ${t}`,
     letters: "letters",
     letters_today: (n) => (n === 1 ? "1 letter arriving today" : `${n} letters arriving today`),
     letters_tomorrow: (n) => (n === 1 ? "1 letter arriving tomorrow" : `${n} letters arriving tomorrow`),
@@ -329,6 +331,13 @@ class MailAndPackagesCard extends LitElement {
         event: d.last_event || "",
         location: d.last_location || "",
         time: d.last_update ? this._relTime(d.last_update) : "",
+        // 17track's official ETA (a "by" deadline, not a from/to window --
+        // "from" is unset on every carrier observed live). Irrelevant once
+        // delivered, so only kept for in-transit/out-for-delivery rows.
+        eta:
+          d.estimated_delivery && d.status !== "Delivered"
+            ? new Date(d.estimated_delivery).toLocaleTimeString(this.hass.locale?.language || "de", { hour: "2-digit", minute: "2-digit" })
+            : "",
         number: d.number,
         url: meta.url(d.number),
       });
@@ -584,10 +593,11 @@ class MailAndPackagesCard extends LitElement {
           ${r.event
             ? html`<div class="row-event ${clickable ? "linky" : ""}" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.event}</div>`
             : ""}
-          ${r.location || r.time
+          ${r.location || r.time || r.eta
             ? html`<div class="row-meta">
                 ${r.location ? html`<ha-icon icon="mdi:map-marker-outline"></ha-icon><span>${r.location}</span>` : ""}
                 ${r.time ? html`<span>${r.time}</span>` : ""}
+                ${r.eta ? html`<ha-icon icon="mdi:clock-outline"></ha-icon><span>${t.eta_by(r.eta)}</span>` : ""}
               </div>`
             : ""}
           ${r.code
