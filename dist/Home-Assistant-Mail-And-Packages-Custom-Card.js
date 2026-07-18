@@ -67,6 +67,8 @@ const STRINGS = {
     yesterday: "gestern",
     delivered_chip: "Heute zugestellt",
     delay: "Verzögerung gemeldet",
+    timeline_toggle: "Sendungsverlauf anzeigen",
+    timeline_underway: "unterwegs",
     status: {
       NotFound: "Angekündigt",
       InfoReceived: "Angekündigt",
@@ -110,6 +112,8 @@ const STRINGS = {
     yesterday: "yesterday",
     delivered_chip: "Delivered today",
     delay: "Delay reported",
+    timeline_toggle: "Show shipment history",
+    timeline_underway: "in transit",
     status: {
       NotFound: "Announced",
       InfoReceived: "Announced",
@@ -166,7 +170,7 @@ const STATUS_KIND = {
 // ── Card ─────────────────────────────────────────────────────────────────────
 class MailAndPackagesCard extends LitElement {
   static get properties() {
-    return { _config: {}, hass: {}, _lettersOpen: {}, _historyOpen: {}, _lightbox: {}, _copied: {} };
+    return { _config: {}, hass: {}, _lettersOpen: {}, _historyOpen: {}, _lightbox: {}, _copied: {}, _openTimelines: {} };
   }
 
   static getConfigElement() {
@@ -181,6 +185,7 @@ class MailAndPackagesCard extends LitElement {
     this._config = config || {};
     this._lettersOpen = Boolean(this._config.letters_expanded);
     this._historyOpen = Boolean(this._config.history_expanded);
+    this._openTimelines = this._openTimelines || new Set();
   }
 
   // ── discovery ──────────────────────────────────────────────────────────
@@ -340,6 +345,8 @@ class MailAndPackagesCard extends LitElement {
             : "",
         number: d.number,
         url: meta.url(d.number),
+        history: d.history || [],
+        estimatedDelivery: d.estimated_delivery || "",
       });
     }
 
@@ -598,6 +605,15 @@ class MailAndPackagesCard extends LitElement {
             <div class="row-side">
               <span class="status ${r.kind}">${r.statusText}</span>
               ${r.eta ? html`<span class="row-eta"><ha-icon icon="mdi:clock-outline"></ha-icon>${t.eta_by(r.eta)}</span>` : ""}
+              ${r.history.length
+                ? html`<button
+                    class="hist-toggle"
+                    aria-label="${t.timeline_toggle}"
+                    @click=${() => this._toggleTimeline(r.number)}
+                  >
+                    <ha-icon icon="${this._openTimelines.has(r.number) ? "mdi:chevron-up" : "mdi:timeline-clock-outline"}"></ha-icon>
+                  </button>`
+                : ""}
             </div>
           </div>
           ${r.location || r.time
@@ -606,6 +622,7 @@ class MailAndPackagesCard extends LitElement {
                 ${r.time ? html`<span>${r.time}</span>` : ""}
               </div>`
             : ""}
+          ${r.history.length && this._openTimelines.has(r.number) ? this._renderTimeline(r, t) : ""}
           ${r.code
             ? html`<div class="codechip" @click=${(e) => this._copyCode(e, r.code)}>
                 <ha-icon icon="mdi:key-variant"></ha-icon>
@@ -624,6 +641,65 @@ class MailAndPackagesCard extends LitElement {
               </div>`
             : ""}
         </div>
+      </div>
+    `;
+  }
+
+  _toggleTimeline(number) {
+    const open = new Set(this._openTimelines);
+    if (open.has(number)) open.delete(number);
+    else open.add(number);
+    this._openTimelines = open;
+  }
+
+  _tlDateTime(raw) {
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return { date: String(raw), time: "" };
+    const lang = this.hass.locale?.language || "de";
+    return {
+      date: d.toLocaleDateString(lang, { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" }),
+      time: d.toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" }),
+    };
+  }
+
+  // Timeline for a single shipment: real 17track events (newest first) plus,
+  // unless already delivered, a "current position" node at the top whose
+  // connecting line fills in proportionally to elapsed time between the last
+  // real event and the 17track ETA -- there's no logged event for a future
+  // checkpoint, so this is an interpolation, not another real data point.
+  _renderTimeline(r, t) {
+    const delivered = r.kind === "delivered";
+    let fill = 0;
+    if (!delivered && r.estimatedDelivery && r.history.length) {
+      const last = new Date(r.history[0].time).getTime();
+      const eta = new Date(r.estimatedDelivery).getTime();
+      if (Number.isFinite(last) && Number.isFinite(eta) && eta > last) {
+        fill = Math.round(Math.min(1, Math.max(0, (Date.now() - last) / (eta - last))) * 100);
+      }
+    }
+    return html`
+      <div class="timeline">
+        ${!delivered
+          ? html`<div class="tl-item tl-virtual" style="--tl-fill:${fill}%">
+              <span class="tl-dot tl-dot-pulse"></span>
+              <div class="tl-row">
+                <span class="tl-date">${r.eta ? t.eta_by(r.eta) : t.timeline_underway}</span>
+              </div>
+            </div>`
+          : ""}
+        ${r.history.map((e, i) => {
+          const { date, time } = this._tlDateTime(e.time);
+          return html`
+            <div class="tl-item ${delivered && i === 0 ? "tl-item-final" : ""}">
+              <span class="tl-dot"></span>
+              <div class="tl-row">
+                <span class="tl-date">${date}</span>
+                <span class="tl-time">${time}</span>
+              </div>
+              <div class="tl-desc">${e.description}${e.location ? ` · ${e.location}` : ""}</div>
+            </div>
+          `;
+        })}
       </div>
     `;
   }
@@ -1053,6 +1129,106 @@ class MailAndPackagesCard extends LitElement {
       }
       .mono {
         font-family: var(--code-font-family, monospace);
+      }
+
+      .hist-toggle {
+        border: none;
+        background: none;
+        padding: 2px;
+        margin: 0;
+        color: var(--secondary-text-color);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        line-height: 0;
+      }
+      .hist-toggle:hover {
+        color: var(--primary-color);
+      }
+      .hist-toggle ha-icon {
+        --mdc-icon-size: 18px;
+      }
+
+      .timeline {
+        margin-top: 10px;
+        padding-left: 4px;
+      }
+      .tl-item {
+        position: relative;
+        padding-left: 20px;
+        padding-bottom: 14px;
+      }
+      .tl-item:last-child {
+        padding-bottom: 0;
+      }
+      .tl-item:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 14px;
+        bottom: -2px;
+        width: 2px;
+        background: var(--divider-color);
+      }
+      .tl-dot {
+        position: absolute;
+        left: 0;
+        top: 4px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--divider-color);
+      }
+      .tl-row {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        font-size: 0.76em;
+      }
+      .tl-date {
+        font-weight: 500;
+        color: var(--primary-text-color);
+      }
+      .tl-time {
+        color: var(--secondary-text-color);
+        font-variant-numeric: tabular-nums;
+      }
+      .tl-desc {
+        font-size: 0.74em;
+        color: var(--secondary-text-color);
+        margin-top: 1px;
+      }
+      .tl-item-final .tl-dot {
+        background: var(--success-color, #4caf50);
+      }
+      .tl-virtual .tl-dot {
+        background: var(--card-background-color, #fff);
+        border: 2px solid var(--info-color, #039be5);
+        top: 3px;
+        left: -1px;
+      }
+      .tl-virtual .tl-date {
+        color: var(--info-color, #0277bd);
+      }
+      .tl-virtual::after {
+        background: linear-gradient(
+          to bottom,
+          var(--info-color, #039be5) var(--tl-fill, 0%),
+          var(--divider-color) var(--tl-fill, 0%)
+        );
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .tl-dot-pulse {
+          animation: tl-pulse 1.8s ease-in-out infinite;
+        }
+      }
+      @keyframes tl-pulse {
+        0%, 100% {
+          box-shadow: 0 0 0 0 color-mix(in srgb, var(--info-color, #039be5) 45%, transparent);
+        }
+        50% {
+          box-shadow: 0 0 0 5px color-mix(in srgb, var(--info-color, #039be5) 0%, transparent);
+        }
       }
 
       .photorow {
