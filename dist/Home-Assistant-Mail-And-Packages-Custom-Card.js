@@ -597,7 +597,7 @@ class MailAndPackagesCard extends LitElement {
             </div>
             <div class="row-side">
               <span class="status ${r.kind}">${r.statusText}</span>
-              ${r.eta ? html`<span class="row-eta">${t.eta_by(r.eta)}</span>` : ""}
+              ${r.eta ? html`<span class="row-eta"><ha-icon icon="mdi:clock-outline"></ha-icon>${t.eta_by(r.eta)}</span>` : ""}
             </div>
           </div>
           ${r.location || r.time
@@ -968,6 +968,9 @@ class MailAndPackagesCard extends LitElement {
         flex-shrink: 0;
       }
       .row-eta {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
         font-size: 0.68em;
         color: var(--secondary-text-color);
         white-space: nowrap;
@@ -1043,6 +1046,9 @@ class MailAndPackagesCard extends LitElement {
         margin-top: 2px;
       }
       .row-meta ha-icon {
+        --mdc-icon-size: 12px;
+      }
+      .row-eta ha-icon {
         --mdc-icon-size: 12px;
       }
       .mono {
