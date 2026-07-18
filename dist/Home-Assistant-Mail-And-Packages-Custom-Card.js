@@ -68,7 +68,6 @@ const STRINGS = {
     delivered_chip: "Heute zugestellt",
     delay: "Verzögerung gemeldet",
     timeline_toggle: "Sendungsverlauf anzeigen",
-    timeline_underway: "unterwegs",
     status: {
       NotFound: "Angekündigt",
       InfoReceived: "Angekündigt",
@@ -113,7 +112,6 @@ const STRINGS = {
     delivered_chip: "Delivered today",
     delay: "Delay reported",
     timeline_toggle: "Show shipment history",
-    timeline_underway: "in transit",
     status: {
       NotFound: "Announced",
       InfoReceived: "Announced",
@@ -603,17 +601,19 @@ class MailAndPackagesCard extends LitElement {
                 : ""}
             </div>
             <div class="row-side">
-              <span class="status ${r.kind}">${r.statusText}</span>
+              <div class="row-side-top">
+                <span class="status ${r.kind}">${r.statusText}</span>
+                ${r.history.length
+                  ? html`<button
+                      class="hist-toggle"
+                      aria-label="${t.timeline_toggle}"
+                      @click=${() => this._toggleTimeline(r.number)}
+                    >
+                      <ha-icon icon="${this._openTimelines.has(r.number) ? "mdi:chevron-up" : "mdi:timeline-clock-outline"}"></ha-icon>
+                    </button>`
+                  : ""}
+              </div>
               ${r.eta ? html`<span class="row-eta"><ha-icon icon="mdi:clock-outline"></ha-icon>${t.eta_by(r.eta)}</span>` : ""}
-              ${r.history.length
-                ? html`<button
-                    class="hist-toggle"
-                    aria-label="${t.timeline_toggle}"
-                    @click=${() => this._toggleTimeline(r.number)}
-                  >
-                    <ha-icon icon="${this._openTimelines.has(r.number) ? "mdi:chevron-up" : "mdi:timeline-clock-outline"}"></ha-icon>
-                  </button>`
-                : ""}
             </div>
           </div>
           ${r.location || r.time
@@ -683,7 +683,7 @@ class MailAndPackagesCard extends LitElement {
           ? html`<div class="tl-item tl-virtual" style="--tl-fill:${fill}%">
               <span class="tl-dot tl-dot-pulse"></span>
               <div class="tl-row">
-                <span class="tl-date">${r.eta ? t.eta_by(r.eta) : t.timeline_underway}</span>
+                <span class="tl-date">${r.eta ? t.eta_by(r.eta) : r.statusText}</span>
               </div>
             </div>`
           : ""}
@@ -1043,6 +1043,11 @@ class MailAndPackagesCard extends LitElement {
         gap: 3px;
         flex-shrink: 0;
       }
+      .row-side-top {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+      }
       .row-eta {
         display: inline-flex;
         align-items: center;
@@ -1146,7 +1151,7 @@ class MailAndPackagesCard extends LitElement {
         color: var(--primary-color);
       }
       .hist-toggle ha-icon {
-        --mdc-icon-size: 18px;
+        --mdc-icon-size: 16px;
       }
 
       .timeline {
