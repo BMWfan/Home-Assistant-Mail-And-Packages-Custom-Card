@@ -583,21 +583,27 @@ class MailAndPackagesCard extends LitElement {
             : ""}
         </div>
         <div class="row-body">
-          <div class="row-top">
-            <span class="row-title" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.title}</span>
-            ${r.number
-              ? html`<span class="row-num mono" title="Sendungsverfolgung öffnen" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.number}</span>`
-              : ""}
-            <span class="status ${r.kind}">${r.statusText}</span>
+          <div class="row-content">
+            <div class="row-main">
+              <div class="row-top">
+                <span class="row-title" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.title}</span>
+                ${r.number
+                  ? html`<span class="row-num mono" title="Sendungsverfolgung öffnen" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.number}</span>`
+                  : ""}
+              </div>
+              ${r.event
+                ? html`<div class="row-event ${clickable ? "linky" : ""}" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.event}</div>`
+                : ""}
+            </div>
+            <div class="row-side">
+              <span class="status ${r.kind}">${r.statusText}</span>
+              ${r.eta ? html`<span class="row-eta">${t.eta_by(r.eta)}</span>` : ""}
+            </div>
           </div>
-          ${r.event
-            ? html`<div class="row-event ${clickable ? "linky" : ""}" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.event}</div>`
-            : ""}
-          ${r.location || r.time || r.eta
+          ${r.location || r.time
             ? html`<div class="row-meta">
                 ${r.location ? html`<ha-icon icon="mdi:map-marker-outline"></ha-icon><span>${r.location}</span>` : ""}
                 ${r.time ? html`<span>${r.time}</span>` : ""}
-                ${r.eta ? html`<ha-icon icon="mdi:clock-outline"></ha-icon><span>${t.eta_by(r.eta)}</span>` : ""}
               </div>`
             : ""}
           ${r.code
@@ -942,9 +948,29 @@ class MailAndPackagesCard extends LitElement {
       }
       .row-top {
         display: flex;
-        justify-content: space-between;
         align-items: center;
         gap: 8px;
+      }
+      .row-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .row-main {
+        flex: 1;
+        min-width: 0;
+      }
+      .row-side {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 3px;
+        flex-shrink: 0;
+      }
+      .row-eta {
+        font-size: 0.68em;
+        color: var(--secondary-text-color);
+        white-space: nowrap;
       }
       .row-title {
         cursor: pointer;
