@@ -38,7 +38,7 @@ const fireEvent = (node, type, detail, options) => {
 // ── i18n ─────────────────────────────────────────────────────────────────────
 const STRINGS = {
   de: {
-    title: "Post & Pakete",
+    title: "Mail & Packages",
     in_transit: "unterwegs",
     out_for_delivery: "in Zustellung",
     delivered_today: "heute",
