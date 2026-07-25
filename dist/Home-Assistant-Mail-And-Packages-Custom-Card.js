@@ -772,6 +772,11 @@ class MailAndPackagesCard extends LitElement {
     const label = item.number || item.order || "";
     const clickable = Boolean(item.number || item.order);
     const open = clickable ? () => window.open(meta.url(item.number), "_blank") : undefined;
+    // Only real 17track-tracked numbers carry an event history -- Amazon
+    // orders and pre-history-feature backfilled entries won't, so the
+    // Details link only shows up when there's actually something to show.
+    const hasHistory = Boolean(item.history && item.history.length);
+    const timelineKey = `h-${label}`;
     return html`
       <div class="history-row">
         <div class="history-badge" style="background:${meta.bg};color:${meta.fg}" @click=${open}>
@@ -784,9 +789,15 @@ class MailAndPackagesCard extends LitElement {
         <div class="history-info">
           <span class="history-carrier">${meta.label}</span>
           <span class="history-number mono" @click=${open}>${label}</span>
+          ${hasHistory
+            ? html`<span> - </span><span class="meta-link" @click=${() => this._toggleTimeline(timelineKey)}>${t.timeline_details}</span>`
+            : ""}
         </div>
         <span class="history-check"><ha-icon icon="mdi:check-circle-outline"></ha-icon>${t.status.Delivered}</span>
       </div>
+      ${hasHistory && this._openTimelines.has(timelineKey)
+        ? this._renderTimeline({ kind: "delivered", history: item.history, eta: "", estimatedDelivery: "" }, t)
+        : ""}
     `;
   }
 
