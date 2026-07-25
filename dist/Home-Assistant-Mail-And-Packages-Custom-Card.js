@@ -47,7 +47,7 @@ const STRINGS = {
     letters_today: (n) => (n === 1 ? "1 Brief kommt heute" : `${n} Briefe kommen heute`),
     letters_tomorrow: (n) => (n === 1 ? "1 Brief kommt morgen" : `${n} Briefe kommen morgen`),
     letters_announced: (n) => (n === 1 ? "1 Brief angekündigt" : `${n} Briefe angekündigt`),
-    history: "Historie",
+    history: "Archiv",
     no_shipments: "Keine Sendungen unterwegs",
     all_quiet: "Alles ruhig – kein Paket, kein Brief.",
     order: "Bestellung",
@@ -91,7 +91,7 @@ const STRINGS = {
     letters_today: (n) => (n === 1 ? "1 letter arriving today" : `${n} letters arriving today`),
     letters_tomorrow: (n) => (n === 1 ? "1 letter arriving tomorrow" : `${n} letters arriving tomorrow`),
     letters_announced: (n) => (n === 1 ? "1 letter announced" : `${n} letters announced`),
-    history: "History",
+    history: "Archive",
     no_shipments: "No shipments in transit",
     all_quiet: "All quiet – no packages, no letters.",
     order: "Order",
@@ -563,7 +563,7 @@ class MailAndPackagesCard extends LitElement {
 
         ${showLetters && letterCount > 0 ? this._renderLetters(letters, letterCount, ents, t) : ""}
 
-        ${showHistory && ents.history && historyCount > 0 ? this._renderHistory(history, historyCount, ents, t) : ""}
+        ${showHistory && ents.history && historyCount > 0 ? this._renderHistory(history, ents, t) : ""}
 
         ${this._lightbox
           ? html`<div class="lightbox" @click=${() => (this._lightbox = null)}>
@@ -801,7 +801,7 @@ class MailAndPackagesCard extends LitElement {
     `;
   }
 
-  _renderHistory(history, count, ents, t) {
+  _renderHistory(history, ents, t) {
     const groups = [];
     let current = null;
     for (const item of history) {
@@ -821,7 +821,7 @@ class MailAndPackagesCard extends LitElement {
           }}
         >
           <ha-icon icon="mdi:history"></ha-icon>
-          <span class="history-title">${t.history} · ${count}</span>
+          <span class="history-title">${t.history}</span>
           <ha-icon class="chev" icon="${this._historyOpen ? "mdi:chevron-up" : "mdi:chevron-down"}"></ha-icon>
         </div>
         ${this._historyOpen
