@@ -1720,22 +1720,25 @@ class MailAndPackagesCard extends LitElement {
       }
 
       .overlay {
-        position: absolute;
+        position: fixed;
         inset: 0;
         background: rgba(0, 0, 0, 0.55);
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
-        padding: 54px 16px 16px;
-        z-index: 10;
+        padding: 16px;
+        z-index: 999;
       }
       .sheet {
         background: var(--secondary-background-color);
         border-radius: 12px;
         width: 100%;
         max-width: 320px;
+        max-height: calc(100vh - 32px);
+        overflow-y: auto;
         padding: 16px 16px 14px;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        box-sizing: border-box;
       }
       .sheet h3 {
         margin: 0 0 3px;
