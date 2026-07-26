@@ -1012,6 +1012,11 @@ class MailAndPackagesCard extends LitElement {
             : ""}
         </div>
         <span class="history-check"><ha-icon icon="mdi:check-circle-outline"></ha-icon>${t.status.Delivered}</span>
+        ${label
+          ? html`<button class="row-remove" title="${t.remove_tracking}" @click=${() => this._openConfirm({ number: label, title: meta.label, badge: meta })}>
+              <ha-icon icon="mdi:trash-can-outline"></ha-icon>
+            </button>`
+          : ""}
       </div>
       ${hasHistory && this._openTimelines.has(timelineKey)
         ? this._renderTimeline({ kind: "delivered", history: item.history, eta: "", estimatedDelivery: "" }, t)
