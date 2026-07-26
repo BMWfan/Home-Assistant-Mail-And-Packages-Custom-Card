@@ -68,6 +68,19 @@ const STRINGS = {
     delivered_chip: "Heute zugestellt",
     delay: "Verzögerung gemeldet",
     timeline_details: "Details",
+    add_tracking: "Sendung hinzufügen",
+    add_title: "Sendung hinzufügen",
+    add_hint: "Trackingnummer eingeben — der Carrier wird automatisch erkannt. Händler und Bemerkung sind optional.",
+    add_number_label: "Trackingnummer",
+    add_detected: (label) => `Erkannt: ${label}`,
+    add_retailer_label: "Händler (optional)",
+    add_memo_label: "Bemerkung (optional)",
+    add_submit: "Hinzufügen",
+    cancel: "Abbrechen",
+    remove_tracking: "Sendung entfernen",
+    remove_title: "Sendung löschen?",
+    remove_hint: "Wollen Sie sicher diese Sendung und den kompletten Verlauf der Sendung löschen? Das kann nicht rückgängig gemacht werden.",
+    remove_submit: "Löschen",
     status: {
       NotFound: "Angekündigt",
       InfoReceived: "Angekündigt",
@@ -112,6 +125,19 @@ const STRINGS = {
     delivered_chip: "Delivered today",
     delay: "Delay reported",
     timeline_details: "Details",
+    add_tracking: "Add shipment",
+    add_title: "Add shipment",
+    add_hint: "Enter the tracking number — the carrier is detected automatically. Retailer and note are optional.",
+    add_number_label: "Tracking number",
+    add_detected: (label) => `Detected: ${label}`,
+    add_retailer_label: "Retailer (optional)",
+    add_memo_label: "Note (optional)",
+    add_submit: "Add",
+    cancel: "Cancel",
+    remove_tracking: "Remove shipment",
+    remove_title: "Remove shipment?",
+    remove_hint: "Are you sure you want to remove this shipment and its entire history? This cannot be undone.",
+    remove_submit: "Remove",
     status: {
       NotFound: "Announced",
       InfoReceived: "Announced",
@@ -143,6 +169,34 @@ const CARRIERS = {
   post_at: { label: "Post AT", short: "PAT", bg: "#FFD100", fg: "#000000", url: (n) => `https://www.post.at/sv/sendungsdetails?snr=${n}` },
   amazon: { logo: "amazon", label: "Amazon", short: "AMZ", bg: "#232F3E", fg: "#FF9900", url: () => "https://www.amazon.de/gp/css/order-history/" },
 };
+// Client-side mirror of universal.py's ORDERED_PATTERNS (most specific
+// first), used ONLY for the live "Erkannt: X" preview badge while typing in
+// the manual-add panel -- the authoritative classification still happens
+// server-side (universal.guess_carrier + 17track's own resolution). Keep in
+// sync with ORDERED_PATTERNS if it changes; a stale preview just shows the
+// wrong badge for a moment; it doesn't affect what actually gets tracked.
+const MANUAL_DETECT_PATTERNS = [
+  ["ups", /^1Z[0-9A-Z]{16}$/],
+  ["usps", /^9[2345]\d{15,26}$/],
+  ["royal_mail", /^[A-Za-z]{2}[0-9]{9}GB$/],
+  ["auspost", /^[A-Za-z]{2}[0-9]{9}AU$/],
+  ["post_nl", /^3S[A-Z0-9]{10,18}$/],
+  ["dhl", /^003404[0-9]{14}$/],
+  ["evri", /^H[0-9A-Z]{15,19}$/],
+  ["post_at", /^[0-9]{22}$/],
+  ["dpd", /^[0-9]{14}$/],
+  ["fedex", /^(?:[0-9]{12}|[0-9]{15}|[0-9]{20})$/],
+  ["gls", /^[0-9]{11,12}$/],
+];
+function guessCarrierClient(number) {
+  const n = (number || "").trim();
+  if (!n) return null;
+  for (const [carrier, re] of MANUAL_DETECT_PATTERNS) {
+    if (re.test(n)) return carrier;
+  }
+  return null;
+}
+
 const carrierMeta = (key) =>
   CARRIERS[String(key || "").toLowerCase()] || {
     label: String(key || "?").toUpperCase(),
@@ -177,7 +231,20 @@ const STATUS_KIND = {
 // ── Card ─────────────────────────────────────────────────────────────────────
 class MailAndPackagesCard extends LitElement {
   static get properties() {
-    return { _config: {}, hass: {}, _lettersOpen: {}, _historyOpen: {}, _lightbox: {}, _copied: {}, _openTimelines: {} };
+    return {
+      _config: {},
+      hass: {},
+      _lettersOpen: {},
+      _historyOpen: {},
+      _lightbox: {},
+      _copied: {},
+      _openTimelines: {},
+      _addOpen: {},
+      _addNumber: {},
+      _addRetailer: {},
+      _addMemo: {},
+      _confirmTarget: {},
+    };
   }
 
   static getConfigElement() {
@@ -193,6 +260,11 @@ class MailAndPackagesCard extends LitElement {
     this._lettersOpen = Boolean(this._config.letters_expanded);
     this._historyOpen = Boolean(this._config.history_expanded);
     this._openTimelines = this._openTimelines || new Set();
+    this._addOpen = Boolean(this._addOpen);
+    this._addNumber = this._addNumber || "";
+    this._addRetailer = this._addRetailer || "";
+    this._addMemo = this._addMemo || "";
+    this._confirmTarget = this._confirmTarget || null;
   }
 
   // ── discovery ──────────────────────────────────────────────────────────
@@ -312,6 +384,130 @@ class MailAndPackagesCard extends LitElement {
     this.hass.callService("button", "press", { entity_id: ents.scan });
   }
 
+  _openAdd(ev) {
+    ev.stopPropagation();
+    this._addNumber = "";
+    this._addRetailer = "";
+    this._addMemo = "";
+    this._addOpen = true;
+  }
+
+  _closeAdd() {
+    this._addOpen = false;
+  }
+
+  _submitAdd(ev) {
+    ev.stopPropagation();
+    const number = this._addNumber.trim();
+    if (!number) return;
+    this.hass.callService("mail_and_packages", "add_tracking", {
+      tracking_number: number,
+      retailer: this._addRetailer.trim() || undefined,
+      memo: this._addMemo.trim() || undefined,
+    });
+    this._addOpen = false;
+  }
+
+  _openConfirm(row) {
+    this._confirmTarget = row;
+  }
+
+  _closeConfirm() {
+    this._confirmTarget = null;
+  }
+
+  _submitRemove(ev) {
+    ev.stopPropagation();
+    if (!this._confirmTarget) return;
+    this.hass.callService("mail_and_packages", "remove_tracking", {
+      tracking_number: this._confirmTarget.number,
+    });
+    this._confirmTarget = null;
+  }
+
+  _renderAddOverlay(t) {
+    const detected = guessCarrierClient(this._addNumber);
+    const meta = detected ? carrierMeta(detected) : null;
+    return html`
+      <div class="overlay" @click=${(e) => e.target === e.currentTarget && this._closeAdd()}>
+        <div class="sheet">
+          <h3>${t.add_title}</h3>
+          <p class="hint">${t.add_hint}</p>
+          <div class="field">
+            <label for="mpAddNumber">${t.add_number_label}</label>
+            <input
+              id="mpAddNumber"
+              type="text"
+              .value=${this._addNumber}
+              @input=${(e) => (this._addNumber = e.target.value)}
+              placeholder="z. B. 00340434671234567"
+            />
+          </div>
+          <div class="detect-row">
+            ${meta
+              ? html`<span class="detect-badge" style="background:${meta.bg};color:${meta.fg}">
+                  <ha-icon icon="mdi:check-circle"></ha-icon>${t.add_detected(meta.label)}
+                </span>`
+              : ""}
+          </div>
+          <div class="field">
+            <label for="mpAddRetailer">${t.add_retailer_label}</label>
+            <input
+              id="mpAddRetailer"
+              type="text"
+              .value=${this._addRetailer}
+              @input=${(e) => (this._addRetailer = e.target.value)}
+            />
+          </div>
+          <div class="field">
+            <label for="mpAddMemo">${t.add_memo_label}</label>
+            <input
+              id="mpAddMemo"
+              type="text"
+              .value=${this._addMemo}
+              @input=${(e) => (this._addMemo = e.target.value)}
+            />
+          </div>
+          <div class="sheet-actions">
+            <button class="btn ghost" @click=${() => this._closeAdd()}>${t.cancel}</button>
+            <button class="btn primary" ?disabled=${!this._addNumber.trim()} @click=${(e) => this._submitAdd(e)}>${t.add_submit}</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  _renderConfirmOverlay(t) {
+    const r = this._confirmTarget;
+    const meta = r.badge || carrierMeta(r.carrier || "");
+    return html`
+      <div class="overlay" @click=${(e) => e.target === e.currentTarget && this._closeConfirm()}>
+        <div class="sheet">
+          <h3>
+            <ha-icon class="warn-icon" icon="mdi:alert-circle-outline"></ha-icon>
+            ${t.remove_title}
+          </h3>
+          <p class="hint">${t.remove_hint}</p>
+          <div class="confirm-target">
+            <div class="badge" style="background:${meta.bg};color:${meta.fg}">
+              ${meta.logo && CARRIER_LOGOS[meta.logo]
+                ? html`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${CARRIER_LOGOS[meta.logo]}"></path></svg>`
+                : meta.short}
+            </div>
+            <div>
+              <div class="ct-title">${r.title}</div>
+              <div class="ct-num mono">${r.number}</div>
+            </div>
+          </div>
+          <div class="sheet-actions">
+            <button class="btn ghost" @click=${() => this._closeConfirm()}>${t.cancel}</button>
+            <button class="btn danger" @click=${(e) => this._submitRemove(e)}>${t.remove_submit}</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   _copyCode(ev, code) {
     ev.stopPropagation();
     if (navigator.clipboard) navigator.clipboard.writeText(code);
@@ -354,6 +550,9 @@ class MailAndPackagesCard extends LitElement {
         url: meta.url(d.number),
         history: d.history || [],
         estimatedDelivery: d.estimated_delivery || "",
+        source: d.source || "",
+        retailer: d.retailer || "",
+        memo: d.memo || "",
       });
     }
 
@@ -489,6 +688,11 @@ class MailAndPackagesCard extends LitElement {
                   <ha-icon icon="mdi:refresh"></ha-icon>
                 </button>`
               : ""}
+            ${ents.universal
+              ? html`<button class="iconbtn addbtn" title="${t.add_tracking}" @click=${(e) => this._openAdd(e)}>
+                  <ha-icon icon="mdi:plus"></ha-icon>
+                </button>`
+              : ""}
           </div>
         </div>
 
@@ -570,6 +774,9 @@ class MailAndPackagesCard extends LitElement {
               <img src="${this._lightbox}" />
             </div>`
           : ""}
+
+        ${this._addOpen ? this._renderAddOverlay(t) : ""}
+        ${this._confirmTarget ? this._renderConfirmOverlay(t) : ""}
       </ha-card>
     `;
   }
@@ -577,7 +784,7 @@ class MailAndPackagesCard extends LitElement {
   _renderRow(r, t) {
     const clickable = Boolean(r.url);
     return html`
-      <div class="row">
+      <div class="row ${r.source === "manual" ? "manual" : ""}">
         <div
           class="badge"
           style="background:${r.badge.bg};color:${r.badge.fg}"
@@ -607,6 +814,12 @@ class MailAndPackagesCard extends LitElement {
               </div>
               ${r.event
                 ? html`<div class="row-event ${clickable ? "linky" : ""}" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.event}</div>`
+                : ""}
+              ${r.retailer
+                ? html`<div class="row-retailer"><ha-icon icon="mdi:storefront-outline"></ha-icon><span>${r.retailer}</span></div>`
+                : ""}
+              ${r.memo
+                ? html`<div class="row-memo"><ha-icon icon="mdi:note-text-outline"></ha-icon><span>${r.memo}</span></div>`
                 : ""}
             </div>
             <div class="row-side">
@@ -646,6 +859,11 @@ class MailAndPackagesCard extends LitElement {
               </div>`
             : ""}
         </div>
+        ${r.number
+          ? html`<button class="row-remove" title="${t.remove_tracking}" @click=${() => this._openConfirm(r)}>
+              <ha-icon icon="mdi:trash-can-outline"></ha-icon>
+            </button>`
+          : ""}
       </div>
     `;
   }
@@ -848,6 +1066,7 @@ class MailAndPackagesCard extends LitElement {
     return css`
       ha-card {
         overflow: hidden;
+        position: relative;
       }
       .warn {
         padding: 14px 16px;
@@ -904,6 +1123,9 @@ class MailAndPackagesCard extends LitElement {
       }
       .iconbtn:hover {
         background: var(--secondary-background-color);
+      }
+      .iconbtn.addbtn {
+        color: var(--primary-color);
       }
       .iconbtn ha-icon.spin {
         animation: spin 1.2s linear infinite;
@@ -1443,6 +1665,211 @@ class MailAndPackagesCard extends LitElement {
         max-width: 92vw;
         max-height: 88vh;
         border-radius: 8px;
+      }
+
+      .row-remove {
+        background: none;
+        border: none;
+        color: var(--secondary-text-color);
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        align-self: flex-start;
+        opacity: 0.55;
+      }
+      .row-remove ha-icon {
+        --mdc-icon-size: 15px;
+      }
+      .row-remove:hover {
+        opacity: 1;
+        background: color-mix(in srgb, var(--error-color, #f44336) 18%, transparent);
+        color: var(--error-color, #f44336);
+      }
+      .row.manual .row-title::after {
+        content: "manuell";
+        margin-left: 7px;
+        font-size: 0.68em;
+        font-weight: 400;
+        color: var(--secondary-text-color);
+        background: var(--secondary-background-color);
+        padding: 1px 7px;
+        border-radius: 10px;
+        vertical-align: middle;
+      }
+      .row-retailer,
+      .row-memo {
+        font-size: 0.78em;
+        color: var(--secondary-text-color);
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .row-memo {
+        font-style: italic;
+      }
+      .row-retailer ha-icon,
+      .row-memo ha-icon {
+        --mdc-icon-size: 12px;
+        flex-shrink: 0;
+      }
+
+      .overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 54px 16px 16px;
+        z-index: 10;
+      }
+      .sheet {
+        background: var(--secondary-background-color);
+        border-radius: 12px;
+        width: 100%;
+        max-width: 320px;
+        padding: 16px 16px 14px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      }
+      .sheet h3 {
+        margin: 0 0 3px;
+        font-size: 0.98em;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--primary-text-color);
+      }
+      .sheet h3 .warn-icon {
+        --mdc-icon-size: 20px;
+        color: var(--error-color, #f44336);
+        flex-shrink: 0;
+      }
+      .sheet .hint {
+        margin: 0 0 14px;
+        font-size: 0.78em;
+        color: var(--secondary-text-color);
+        line-height: 1.45;
+      }
+      .sheet .field {
+        margin-bottom: 10px;
+      }
+      .sheet .field label {
+        display: block;
+        font-size: 0.74em;
+        color: var(--secondary-text-color);
+        margin-bottom: 5px;
+      }
+      .sheet .field input {
+        width: 100%;
+        background: var(--card-background-color, var(--card-background));
+        border: 1px solid var(--divider-color);
+        border-radius: 8px;
+        padding: 9px 10px;
+        color: var(--primary-text-color);
+        font-family: var(--code-font-family, monospace);
+        font-size: 0.86em;
+        box-sizing: border-box;
+      }
+      .sheet .field input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+      .detect-row {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin: -2px 0 10px;
+        font-size: 0.78em;
+        min-height: 22px;
+      }
+      .detect-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 9px 2px 6px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.92em;
+      }
+      .detect-badge ha-icon {
+        --mdc-icon-size: 13px;
+      }
+      .confirm-target {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        background: var(--card-background-color, var(--card-background));
+        border: 1px solid var(--divider-color);
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin: 12px 0 14px;
+      }
+      .confirm-target .badge {
+        width: 26px;
+        height: 26px;
+        font-size: 0.6em;
+        flex-shrink: 0;
+      }
+      .confirm-target .badge svg {
+        width: 15px;
+        height: 15px;
+      }
+      .confirm-target .ct-title {
+        font-size: 0.86em;
+        font-weight: 500;
+        color: var(--primary-text-color);
+      }
+      .confirm-target .ct-num {
+        font-size: 0.72em;
+        color: var(--secondary-text-color);
+      }
+      .sheet-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .btn {
+        border: none;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 0.84em;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--secondary-text-color);
+      }
+      .btn.ghost:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .btn.primary {
+        background: var(--primary-color);
+        color: #04263a;
+      }
+      .btn.primary:hover {
+        filter: brightness(1.08);
+      }
+      .btn.primary:disabled {
+        opacity: 0.5;
+        cursor: default;
+        filter: none;
+      }
+      .btn.danger {
+        background: var(--error-color, #f44336);
+        color: #fff;
+      }
+      .btn.danger:hover {
+        filter: brightness(1.08);
       }
     `;
   }
