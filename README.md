@@ -61,6 +61,17 @@ url: /local/Home-Assistant-Mail-And-Packages-Custom-Card.js
 type: module
 ```
 
+### Docker Compose dev setup (paired with the integration repo)
+
+For local development against a disposable HA instance (no HAOS/Supervisor),
+the [integration repo](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages)'s
+`docker-compose.yml` (on its own `feature/docker-devcontainer` branch) bind-mounts
+this repo's `dist/` directory read-only into the container's `www/` folder. Clone
+both repos as siblings (or set `CARD_DIST_PATH` — see that repo's `.env.example`),
+then register the resource once via Settings > Dashboards > Resources with URL
+`/local/mail-packages-card/Home-Assistant-Mail-And-Packages-Custom-Card.js`
+(JavaScript Module). See that repo's `HANDOFF.md` for the full setup.
+
 ## Requirements
 
 Requires the Mail and Packages integration **v0.6.0 or newer** (letter image URLs and OTP order mapping in sensor attributes).
