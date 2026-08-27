@@ -48,6 +48,7 @@ const STRINGS = {
     letters_tomorrow: (n) => (n === 1 ? "1 Brief kommt morgen" : `${n} Briefe kommen morgen`),
     letters_announced: (n) => (n === 1 ? "1 Brief angekündigt" : `${n} Briefe angekündigt`),
     history: "Archiv",
+    recently_delivered: "Kürzlich zugestellt",
     no_shipments: "Keine Sendungen unterwegs",
     all_quiet: "Alles ruhig – kein Paket, kein Brief.",
     order: "Bestellung",
@@ -105,6 +106,7 @@ const STRINGS = {
     letters_tomorrow: (n) => (n === 1 ? "1 letter arriving tomorrow" : `${n} letters arriving tomorrow`),
     letters_announced: (n) => (n === 1 ? "1 letter announced" : `${n} letters announced`),
     history: "Archive",
+    recently_delivered: "Recently delivered",
     no_shipments: "No shipments in transit",
     all_quiet: "All quiet – no packages, no letters.",
     order: "Order",
@@ -236,6 +238,7 @@ class MailAndPackagesCard extends LitElement {
       hass: {},
       _lettersOpen: {},
       _historyOpen: {},
+      _recentOpen: {},
       _lightbox: {},
       _copied: {},
       _openTimelines: {},
@@ -259,6 +262,7 @@ class MailAndPackagesCard extends LitElement {
     this._config = config || {};
     this._lettersOpen = Boolean(this._config.letters_expanded);
     this._historyOpen = Boolean(this._config.history_expanded);
+    this._recentOpen = Boolean(this._config.recent_expanded);
     this._openTimelines = this._openTimelines || new Set();
     this._addOpen = Boolean(this._addOpen);
     this._addNumber = this._addNumber || "";
@@ -767,7 +771,7 @@ class MailAndPackagesCard extends LitElement {
 
         ${showLetters && letterCount > 0 ? this._renderLetters(letters, letterCount, ents, t) : ""}
 
-        ${showHistory && ents.history && historyCount > 0 ? this._renderHistory(history, ents, t) : ""}
+        ${showHistory && ents.history && historyCount > 0 ? this._renderHistorySections(history, t) : ""}
 
         ${this._lightbox
           ? html`<div class="lightbox" @click=${() => (this._lightbox = null)}>
@@ -1024,11 +1028,43 @@ class MailAndPackagesCard extends LitElement {
     `;
   }
 
-  _renderHistory(history, ents, t) {
-    const groups = [];
-    let current = null;
+  // How many whole days since a YYYY-MM-DD "delivered" date, using the same
+  // local-midnight normalization as _historyDate for consistent day math.
+  _daysSinceDelivered(raw) {
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return 0;
+    const today = new Date();
+    return Math.round((today.setHours(0, 0, 0, 0) - d.setHours(0, 0, 0, 0)) / 86400000);
+  }
+
+  // Split point mirrors HISTORY_ARCHIVE_AFTER_DAYS in the integration's
+  // const.py -- purely a display grouping, the backend keeps everything for
+  // HISTORY_RETENTION_DAYS (90) regardless of this cutoff.
+  _renderHistorySections(history, t) {
+    const recent = [];
+    const archived = [];
     for (const item of history) {
       if (!item) continue;
+      (this._daysSinceDelivered(item.delivered) < 21 ? recent : archived).push(item);
+    }
+    return html`
+      ${recent.length
+        ? this._renderHistoryBlock(recent, t.recently_delivered, "mdi:package-variant-closed-check", this._recentOpen, () => {
+            this._recentOpen = !this._recentOpen;
+          }, t)
+        : ""}
+      ${archived.length
+        ? this._renderHistoryBlock(archived, t.history, "mdi:archive-outline", this._historyOpen, () => {
+            this._historyOpen = !this._historyOpen;
+          }, t)
+        : ""}
+    `;
+  }
+
+  _renderHistoryBlock(items, title, icon, isOpen, toggle, t) {
+    const groups = [];
+    let current = null;
+    for (const item of items) {
       if (!current || current.date !== item.delivered) {
         current = { date: item.delivered, items: [] };
         groups.push(current);
@@ -1037,17 +1073,12 @@ class MailAndPackagesCard extends LitElement {
     }
     return html`
       <div class="history">
-        <div
-          class="history-head"
-          @click=${() => {
-            this._historyOpen = !this._historyOpen;
-          }}
-        >
-          <ha-icon icon="mdi:history"></ha-icon>
-          <span class="history-title">${t.history}</span>
-          <ha-icon class="chev" icon="${this._historyOpen ? "mdi:chevron-up" : "mdi:chevron-down"}"></ha-icon>
+        <div class="history-head" @click=${toggle}>
+          <ha-icon icon="${icon}"></ha-icon>
+          <span class="history-title">${title}</span>
+          <ha-icon class="chev" icon="${isOpen ? "mdi:chevron-up" : "mdi:chevron-down"}"></ha-icon>
         </div>
-        ${this._historyOpen
+        ${isOpen
           ? html`<div class="history-body">
               ${groups.map(
                 (g) => html`
