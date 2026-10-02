@@ -1,63 +1,77 @@
-# Home-Assistant-Mail-And-Packages-Custom-Card
-A Custom Lovelace card to pull together the mail and packages sensors.
+# Mail and Packages Card
 
-<img src="https://github.com/moralmunky/Home-Assistant-Mail-And-Packages-Custom-Card/blob/master/img/card-image.png?raw=true" alt="Preview of card" />
+A modern shipment-list card for the [Mail and Packages](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages) integration.
 
-## Lovelace GUI Setup
+<img src="img/card-preview.png" alt="Card preview: shipment list with delivery code, driver photo and letter previews (top), empty state (bottom)" width="470" />
 
-## Manual Install
-Both JS files need to be stored inside the path/to/config/www/ folder. In the Lovelace reource URL path, local is the same as the www folder. Construct your path to the JS inside the www folder for the resurce URL. For the example below:
-```
-path/to/config/www/Home-Assistant-Mail-And-Packages-Custom-Card/Home-Assistant-Mail-And-Packages-Custom-Card.js
+*One card, two states: with shipments and letters (top) and when nothing is pending (bottom). Gray boxes are placeholder images — live they show the actual letter scans and driver photo.*
 
-path/to/config/www/Home-Assistant-Mail-And-Packages-Custom-Card/Home-Assistant-Mail-And-Packages-Custom-Card-editor.js
-```
-Configuration > Lovelace Dashboards > Resources
+Instead of a grid of per-carrier counters, the card shows what actually matters:
 
-```
-url: /local/Home-Assistant-Mail-And-Packages-Custom-Card/Home-Assistant-Mail-And-Packages-Custom-Card.js
-type: Javascript Module
-```
+- **Shipment list** – one row per shipment with carrier badge, status chip, last tracking event, location and time (powered by the integration's universal tracking / 17track data). Tap a row to open the carrier's tracking page.
+- **Summary chips** – packages in transit, delivered today, letters arriving.
+- **Amazon delivery codes (OTP)** – shown attached to the matching order, with one-tap copy.
+- **Amazon Hub pickup codes**.
+- **Driver photo** – thumbnail on the delivered row, tap to enlarge.
+- **Letter previews** – expandable row with per-letter images (DHL Briefankündigung) and delivery dates.
+- **Scan now** button in the header + relative "last checked" time.
+- Clean empty state, automatic dark/light theme support, German + English.
 
-## HACS Install
+## Zero configuration
 
-[HACS](https://hacs.xyz) will install the files and add an entry in the Lovelace resource
-* Have [HACS](https://hacs.xyz) installed in your instance of HASS
-* Add URL: **https://github.com/moralmunky/Home-Assistant-Mail-And-Packages-Custom-Card** as a custom repository with Type: **LOVELACE**
-* Navigate to the Frontend directory
-* Search for Mail and Packages, then choose install
-* You may need to empty your browser cache for the frontend to recognize the new files.
+All entities are discovered automatically from the entity registry (integration platform `mail_and_packages`). Add the card and you are done:
 
-HACS install path
-```
-/path/to/config/www/community/Home-Assistant-Mail-And-Packages-Custom-Card/
-```
-Path HACS adds to Lovelace resources
-```
-/hacsfiles/Home-Assistant-Mail-And-Packages-Custom-Card/Home-Assistant-Mail-And-Packages-Custom-Card.js
+```yaml
+type: custom:mail-and-packages-card
 ```
 
-## Card Configuration
+### Options
 
-Add a manual card then input the yaml below.
+| Option | Default | Description |
+| --- | --- | --- |
+| `name` | `Post & Pakete` / `Mail & Packages` | Card title |
+| `show_summary` | `true` | Summary chips row |
+| `show_shipments` | `true` | Shipment list |
+| `show_letters` | `true` | Letters row |
+| `letters_expanded` | `false` | Expand letter previews by default |
+
+Entity auto-discovery can be overridden per key if ever needed
+(`updated`, `universal`, `transit`, `delivered`, `letters`, `amazon`,
+`amazon_delivered`, `otp`, `hub`, `scan`, `amazon_camera`, `dhl_camera`):
+
+```yaml
+type: custom:mail-and-packages-card
+universal: sensor.my_renamed_universal_sensor
 ```
-type: 'custom:mail-and-packages-card'
-name: Mail Summary
-updated: sensor.mail_updated
-details: true
-image: false
+
+## Install
+
+### HACS
+
+- Add `https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card` as a custom repository (type **Dashboard**)
+- Install "Mail and Packages Custom Card"
+- Hard-refresh the browser after updates (Ctrl+Shift+R)
+
+### Manual
+
+Copy `dist/Home-Assistant-Mail-And-Packages-Custom-Card.js` to `config/www/` and add it as a dashboard resource:
+
 ```
-Switch to the visual editor and complete the setup by assigning the sensors you have enabled in the [Mail and Packages integration](https://github.com/moralmunky/Home-Assistant-Mail-And-Packages).
+url: /local/Home-Assistant-Mail-And-Packages-Custom-Card.js
+type: module
+```
 
-#### USPS Mail Image Display
-The mail images can be displayed by using the mail_today.gif directly or use a [local file camera entity](https://github.com/moralmunky/Home-Assistant-Mail-And-Packages/wiki/Example-Automations-and-Templates#camera). Use the blue toggle switches to turn either option on or off.
+### Docker Compose dev setup (paired with the integration repo)
 
-* Mail GIF Location: The mail_today.gif file must be saved in the `www` folder for the front end to load it. If the image is saved directly in the `www` folder you will use the path `/local/mail_today.gif`. Please see the [Mail and Packages Integration](https://github.com/moralmunky/Home-Assistant-Mail-And-Packages/wiki/Configuration-and-Email-Settings#configuration) configuration section for the path the integration should be set to based on the type of HASS installation you are using. Random image file name setting should be turned off. 
+For local development against a disposable HA instance (no HAOS/Supervisor),
+the [integration repo](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages)'s
+`docker-compose.yml` (on its own `feature/docker-devcontainer` branch) bind-mounts
+this repo's `dist/` directory read-only into the container's `www/` folder. Clone
+both repos as siblings (or set `CARD_DIST_PATH` — see that repo's `.env.example`),
+then register the resource once via Settings > Dashboards > Resources with URL
+`/local/mail-packages-card/Home-Assistant-Mail-And-Packages-Custom-Card.js`
+(JavaScript Module). See that repo's `HANDOFF.md` for the full setup.
 
-* Camera Entity: Set up a [local file camera entity](https://www.home-assistant.io/integrations/local_file/) described in the [integrations WIKI](https://github.com/moralmunky/Home-Assistant-Mail-And-Packages/wiki/Example-Automations-and-Templates#camera). Set this option to the name of the local file camera entity you created.
+## Requirements
 
-
-#### Delivery Message Sensor
-The delivery message sensor, `sensor.mail_delieveries`, is not created by the [Mail and Packages Integration](https://github.com/moralmunky/Home-Assistant-Mail-And-Packages/wiki/Example-Automations-and-Templates#post-0115). You must create a [template sensor](https://www.home-assistant.io/integrations/template/). This is left out of the integration on purpose so they can customize as they see fit.
-
-<img src="https://github.com/moralmunky/Home-Assistant-Mail-And-Packages-Custom-Card/blob/master/img/visual-editor.png?raw=true" alt="Preview of visual-editor" />
+Requires the Mail and Packages integration **v0.6.0 or newer** (letter image URLs and OTP order mapping in sensor attributes).
