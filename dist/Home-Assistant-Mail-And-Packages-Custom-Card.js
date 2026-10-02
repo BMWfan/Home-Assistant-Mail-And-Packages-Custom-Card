@@ -94,6 +94,72 @@ const STRINGS = {
       Expired: "Abgelaufen",
       unknown: "Angekündigt",
     },
+    status_desc_carrier: {
+      dhl: {
+        InfoReceived: "Elektronisch angekündigt",
+        InTransit: "Im Paketzentrum bearbeitet",
+        OutForDelivery: "In das Zustellfahrzeug geladen",
+        AvailableForPickup: "Liegt zur Abholung bereit",
+        DeliveryFailure: "Konnte nicht zugestellt werden",
+        Delivered: "Wurde ausgeliefert",
+        Exception: "Zustellung verzögert sich",
+      },
+      dpd: {
+        InfoReceived: "Auftragsdaten übermittelt",
+        InTransit: "Im Paketzustellzentrum",
+        OutForDelivery: "In Zustellung",
+        AvailableForPickup: "Im Pickup Paketshop bereit",
+        DeliveryFailure: "Empfänger nicht angetroffen",
+        Delivered: "Erfolgreich zugestellt",
+      },
+      hermes: {
+        InfoReceived: "Sendungsdaten übermittelt",
+        InTransit: "Im Hermes Verteilzentrum",
+        OutForDelivery: "In der Zustellung",
+        AvailableForPickup: "Liegt im PaketShop zur Abholung bereit",
+        DeliveryFailure: "Empfänger nicht angetroffen",
+        Delivered: "Sendung wurde zugestellt",
+      },
+      ups: {
+        InfoReceived: "Etikett erstellt",
+        OutForDelivery: "Wird heute zugestellt",
+        AvailableForPickup: "Wartet am Access Point auf Abholung",
+        DeliveryFailure: "Empfänger nicht anwesend",
+        Delivered: "Zugestellt",
+      },
+      fedex: {
+        InTransit: "Auf dem Weg",
+        OutForDelivery: "In Zustellung",
+        DeliveryFailure: "Zustellausnahme",
+        Exception: "Zustellausnahme",
+        Delivered: "Zugestellt",
+      },
+      amazon: {
+        InTransit: "Unterwegs",
+        OutForDelivery: "Wird heute zugestellt",
+        Delivered: "Zugestellt",
+      },
+      usps: {
+        InfoReceived: "Pre-Shipment Info Sent to USPS",
+        InTransit: "In Transit to Next Facility",
+        OutForDelivery: "Out for Delivery",
+        AvailableForPickup: "Available for Pickup",
+        DeliveryFailure: "Delivery Attempted",
+        Delivered: "Delivered",
+      },
+    },
+    status_desc: {
+      NotFound: "Sendung wurde angekündigt",
+      InfoReceived: "Sendung wurde angekündigt",
+      InTransit: "Auf dem Weg zum Ziel",
+      AvailableForPickup: "Bereit zur Abholung",
+      OutForDelivery: "Im Zustellfahrzeug unterwegs zu dir",
+      DeliveryFailure: "Zustellung nicht möglich",
+      Delivered: "Zugestellt",
+      Exception: "Es gibt ein Problem mit der Sendung",
+      Expired: "Sendungsverfolgung abgelaufen",
+      unknown: "Sendung wurde angekündigt",
+    },
   },
   en: {
     title: "Mail & Packages",
@@ -151,6 +217,72 @@ const STRINGS = {
       Exception: "Problem",
       Expired: "Expired",
       unknown: "Announced",
+    },
+    status_desc_carrier: {
+      dhl: {
+        InfoReceived: "Shipment announced electronically",
+        InTransit: "Processed at parcel center",
+        OutForDelivery: "Loaded onto delivery vehicle",
+        AvailableForPickup: "Ready for pickup",
+        DeliveryFailure: "Could not be delivered",
+        Delivered: "Shipment delivered",
+        Exception: "Delivery is delayed",
+      },
+      dpd: {
+        InfoReceived: "Order data transmitted",
+        InTransit: "At parcel delivery center",
+        OutForDelivery: "Out for delivery",
+        AvailableForPickup: "Ready at Pickup parcel shop",
+        DeliveryFailure: "Recipient not found",
+        Delivered: "Successfully delivered",
+      },
+      hermes: {
+        InfoReceived: "Shipment data transmitted",
+        InTransit: "At Hermes distribution center",
+        OutForDelivery: "Out for delivery",
+        AvailableForPickup: "Ready for pickup at PaketShop",
+        DeliveryFailure: "Recipient not found",
+        Delivered: "Shipment delivered",
+      },
+      ups: {
+        InfoReceived: "Label Created",
+        OutForDelivery: "Out For Delivery Today",
+        AvailableForPickup: "Waiting at UPS Access Point",
+        DeliveryFailure: "Recipient not available",
+        Delivered: "Delivered",
+      },
+      fedex: {
+        InTransit: "On the way",
+        OutForDelivery: "Out for delivery",
+        DeliveryFailure: "Delivery exception",
+        Exception: "Delivery exception",
+        Delivered: "Delivered",
+      },
+      amazon: {
+        InTransit: "On the way",
+        OutForDelivery: "Out for delivery today",
+        Delivered: "Delivered",
+      },
+      usps: {
+        InfoReceived: "Pre-Shipment Info Sent to USPS",
+        InTransit: "In Transit to Next Facility",
+        OutForDelivery: "Out for Delivery",
+        AvailableForPickup: "Available for Pickup",
+        DeliveryFailure: "Delivery Attempted",
+        Delivered: "Delivered",
+      },
+    },
+    status_desc: {
+      NotFound: "Shipment announced",
+      InfoReceived: "Shipment announced",
+      InTransit: "On its way to the destination",
+      AvailableForPickup: "Ready for pickup",
+      OutForDelivery: "In the delivery vehicle on its way to you",
+      DeliveryFailure: "Delivery was not possible",
+      Delivered: "Delivered",
+      Exception: "There is a problem with the shipment",
+      Expired: "Tracking expired",
+      unknown: "Shipment announced",
     },
   },
 };
@@ -213,6 +345,16 @@ const carrierMeta = (key) =>
     fg: "var(--primary-text-color)",
     url: (n) => `https://t.17track.net/de#nums=${n}`,
   };
+
+// Carrier-native subtitle wording first (t.status_desc_carrier[carrier][status]),
+// then the generic per-status text. evri is Hermes under its UK brand name.
+const carrierStatusDesc = (t, carrier, statusKey) => {
+  let c = String(carrier || "").toLowerCase();
+  if (c === "evri") c = "hermes";
+  const own = t.status_desc_carrier && t.status_desc_carrier[c];
+  if (own && own[statusKey]) return own[statusKey];
+  return t.status_desc && (t.status_desc[statusKey] || t.status_desc.unknown);
+};
 
 // Status string -> semantic bucket used for chip colors.
 // Coarse next-milestone lookup for the timeline's "current position" node --
@@ -546,7 +688,8 @@ class MailAndPackagesCard extends LitElement {
         title: meta.label,
         statusText: t.status[statusKey] || t.status.unknown,
         kind: STATUS_KIND[d.status] || "announced",
-        event: d.last_event || "",
+        event: carrierStatusDesc(t, d.carrier, statusKey) || d.last_event || "",
+        eventRaw: d.last_event || "",
         location: d.last_location || "",
         time: d.last_update ? this._relTime(d.last_update) : "",
         // 17track's official ETA (a "by" deadline, not a from/to window --
@@ -996,7 +1139,7 @@ class MailAndPackagesCard extends LitElement {
                   : ""}
               </div>
               ${r.event
-                ? html`<div class="row-event ${clickable ? "linky" : ""}" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.event}</div>`
+                ? html`<div class="row-event ${clickable ? "linky" : ""}" title=${r.eventRaw || ""} @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.event}</div>`
                 : ""}
               ${r.retailer
                 ? html`<div class="row-retailer"><ha-icon icon="mdi:storefront-outline"></ha-icon><span>${r.retailer}</span></div>`
