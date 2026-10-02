@@ -1,30 +1,31 @@
-# Home-Assistant-Mail-And-Packages-Custom-Card
-A Custom Lovelace card to pull together the mail and packages sensors.
+# Mail and Packages Card
 
-<img src="https://github.com/moralmunky/Home-Assistant-Mail-And-Packages-Custom-Card/blob/master/card-image.png?raw=true" alt="Preview of card" />
+Eine moderne Sendungslisten-Karte für die [Mail and Packages](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages) Integration.
 
-## Lovelace GUI Setup
+<img src="img/card-preview.png" alt="Kartenvorschau: Sendungsliste mit Zustellcode, Fahrerfoto und Briefvorschau" width="470" />
 
-Bothh JS files need to be stored inside the path/to/config/www/ folder. In the Lovelace reource URL path, local is the same as the www folder. Construct your path to the JS inside the www folder for the resurce URL. For the example below:
+- **Sendungsliste** mit Paketdienst-Badge, Status, letztem Tracking-Ereignis, Ort und Zeit; Tippen öffnet die Sendungsverfolgung des Paketdienstes.
+- **Zusammenfassung**: Pakete unterwegs, heute zugestellt, Briefe erwartet.
+- **Amazon-Zustellcodes (OTP)** und **Amazon-Hub-Abholcodes** mit Ein-Tipp-Kopieren.
+- **Fahrerfoto** bei zugestellten Sendungen.
+- **Briefvorschau** mit Bildern pro Brief und Zustelldatum.
+- Button „Jetzt prüfen", dunkles/helles Theme, Deutsch + Englisch.
 
-path/to/config/www/Home-Assistant-Mail-And-Packages-Custom-Card/Home-Assistant-Mail-And-Packages-Custom-Card.js
+## Keine Konfiguration nötig
 
-path/to/config/www/Home-Assistant-Mail-And-Packages-Custom-Card/Home-Assistant-Mail-And-Packages-Custom-Card-editor.js
+Alle Entitäten werden automatisch aus der Entity-Registry erkannt (Plattform `mail_and_packages`):
 
-Configuration > Lovelace Dashboards > Resources
+```yaml
+type: custom:mail-and-packages-card
+```
+
+## Installation
+
+Ressource einbinden (bei HACS automatisch), danach Browser hart neu laden (Strg+Umschalt+R):
 
 ```
-url: /local/Home-Assistant-Mail-And-Packages-Custom-Card/mail-and-packages-card.js
-type: Javascript Module
+url: /local/Home-Assistant-Mail-And-Packages-Custom-Card.js
+type: module
 ```
-Add the card configuration to the cards: section of the view you want the card to be in.
 
-Minimal Setup:
-The remaining sensors can be added in the card configurator.
-```
-- type: 'custom:mail-and-packages-card'
-  name: Mail Summary
-  updated: sensor.mail_updated
-  details: true
-  image: false
-```
+Voraussetzung: Mail and Packages Integration **v0.6.0 oder neuer**. Details und Optionen: siehe README.

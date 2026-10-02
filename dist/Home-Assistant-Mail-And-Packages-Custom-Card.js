@@ -289,18 +289,18 @@ const STRINGS = {
 
 // ── Carrier presentation ─────────────────────────────────────────────────────
 const CARRIERS = {
-  dhl: { logo: "dhl", label: "DHL", short: "DHL", bg: "#FFCC00", fg: "#D40511", url: (n) => `https://www.dhl.de/de/privatkunden/pakete-empfangen/verfolgen.html?piececode=${n}` },
-  ups: { logo: "ups", label: "UPS", short: "UPS", bg: "#351C15", fg: "#FFB500", url: (n) => `https://www.ups.com/track?tracknum=${n}` },
-  usps: { logo: "usps", label: "USPS", short: "USPS", bg: "#004B87", fg: "#ffffff", url: (n) => `https://tools.usps.com/go/TrackConfirmAction?tLabels=${n}` },
-  fedex: { logo: "fedex", label: "FedEx", short: "FDX", bg: "#4D148C", fg: "#FF6600", url: (n) => `https://www.fedex.com/fedextrack/?trknbr=${n}` },
-  gls: { label: "GLS", short: "GLS", bg: "#061AB1", fg: "#FFD100", url: (n) => `https://gls-group.com/DE/de/paket-verfolgen?match=${n}` },
-  dpd: { logo: "dpd", label: "DPD", short: "DPD", bg: "#DC0032", fg: "#ffffff", url: (n) => `https://tracking.dpd.de/status/de_DE/parcel/${n}` },
-  evri: { logo: "hermes", label: "Evri/Hermes", short: "HER", bg: "#009BDE", fg: "#ffffff", url: (n) => `https://www.myhermes.de/empfangen/sendungsverfolgung/sendungsinformation#${n}` },
-  hermes: { logo: "hermes", label: "Hermes", short: "HER", bg: "#009BDE", fg: "#ffffff", url: (n) => `https://www.myhermes.de/empfangen/sendungsverfolgung/sendungsinformation#${n}` },
-  royal_mail: { label: "Royal Mail", short: "RM", bg: "#DA202A", fg: "#FFD100", url: (n) => `https://www.royalmail.com/track-your-item#/tracking-results/${n}` },
-  auspost: { label: "AusPost", short: "AUP", bg: "#DC1928", fg: "#ffffff", url: (n) => `https://auspost.com.au/mypost/track/#/details/${n}` },
-  post_nl: { label: "PostNL", short: "PNL", bg: "#F56900", fg: "#ffffff", url: (n) => `https://jouw.postnl.nl/track-and-trace/${n}` },
-  post_at: { label: "Post AT", short: "PAT", bg: "#FFD100", fg: "#000000", url: (n) => `https://www.post.at/sv/sendungsdetails?snr=${n}` },
+  dhl: { logo: "dhl", label: "DHL", short: "DHL", bg: "#FFCC00", fg: "#D40511", url: (n) => `https://www.dhl.de/de/privatkunden/pakete-empfangen/verfolgen.html?piececode=${encodeURIComponent(n)}` },
+  ups: { logo: "ups", label: "UPS", short: "UPS", bg: "#351C15", fg: "#FFB500", url: (n) => `https://www.ups.com/track?tracknum=${encodeURIComponent(n)}` },
+  usps: { logo: "usps", label: "USPS", short: "USPS", bg: "#004B87", fg: "#ffffff", url: (n) => `https://tools.usps.com/go/TrackConfirmAction?tLabels=${encodeURIComponent(n)}` },
+  fedex: { logo: "fedex", label: "FedEx", short: "FDX", bg: "#4D148C", fg: "#FF6600", url: (n) => `https://www.fedex.com/fedextrack/?trknbr=${encodeURIComponent(n)}` },
+  gls: { label: "GLS", short: "GLS", bg: "#061AB1", fg: "#FFD100", url: (n) => `https://gls-group.com/DE/de/paket-verfolgen?match=${encodeURIComponent(n)}` },
+  dpd: { logo: "dpd", label: "DPD", short: "DPD", bg: "#DC0032", fg: "#ffffff", url: (n) => `https://tracking.dpd.de/status/de_DE/parcel/${encodeURIComponent(n)}` },
+  evri: { logo: "hermes", label: "Evri/Hermes", short: "HER", bg: "#009BDE", fg: "#ffffff", url: (n) => `https://www.myhermes.de/empfangen/sendungsverfolgung/sendungsinformation#${encodeURIComponent(n)}` },
+  hermes: { logo: "hermes", label: "Hermes", short: "HER", bg: "#009BDE", fg: "#ffffff", url: (n) => `https://www.myhermes.de/empfangen/sendungsverfolgung/sendungsinformation#${encodeURIComponent(n)}` },
+  royal_mail: { label: "Royal Mail", short: "RM", bg: "#DA202A", fg: "#FFD100", url: (n) => `https://www.royalmail.com/track-your-item#/tracking-results/${encodeURIComponent(n)}` },
+  auspost: { label: "AusPost", short: "AUP", bg: "#DC1928", fg: "#ffffff", url: (n) => `https://auspost.com.au/mypost/track/#/details/${encodeURIComponent(n)}` },
+  post_nl: { label: "PostNL", short: "PNL", bg: "#F56900", fg: "#ffffff", url: (n) => `https://jouw.postnl.nl/track-and-trace/${encodeURIComponent(n)}` },
+  post_at: { label: "Post AT", short: "PAT", bg: "#FFD100", fg: "#000000", url: (n) => `https://www.post.at/sv/sendungsdetails?snr=${encodeURIComponent(n)}` },
   amazon: { logo: "amazon", label: "Amazon", short: "AMZ", bg: "#232F3E", fg: "#FF9900", url: () => "https://www.amazon.de/gp/css/order-history/" },
 };
 // Carriers that get the animated "out for delivery" truck badge, drawn as
@@ -343,7 +343,7 @@ const carrierMeta = (key) =>
     short: String(key || "?").slice(0, 3).toUpperCase(),
     bg: "var(--secondary-background-color)",
     fg: "var(--primary-text-color)",
-    url: (n) => `https://t.17track.net/de#nums=${n}`,
+    url: (n) => `https://t.17track.net/de#nums=${encodeURIComponent(n)}`,
   };
 
 // Carrier-native subtitle wording first (t.status_desc_carrier[carrier][status]),
@@ -1110,7 +1110,7 @@ class MailAndPackagesCard extends LitElement {
         <div
           class="badge"
           style="${r.badge.overlayTruck ? "background:#1c1c1f" : `background:${r.badge.bg};color:${r.badge.fg}`}"
-          @click=${clickable ? () => window.open(r.url, "_blank") : undefined}
+          @click=${clickable ? () => window.open(r.url, "_blank", "noopener,noreferrer") : undefined}
         >
           ${r.badge.overlayTruck
             ? this._truckBadge(r.badge.logo)
@@ -1133,13 +1133,13 @@ class MailAndPackagesCard extends LitElement {
           <div class="row-content">
             <div class="row-main">
               <div class="row-top">
-                <span class="row-title" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.title}</span>
+                <span class="row-title" @click=${clickable ? () => window.open(r.url, "_blank", "noopener,noreferrer") : undefined}>${r.title}</span>
                 ${r.number
-                  ? html`<span class="row-num mono" title="Sendungsverfolgung öffnen" @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.number}</span>`
+                  ? html`<span class="row-num mono" title="Sendungsverfolgung öffnen" @click=${clickable ? () => window.open(r.url, "_blank", "noopener,noreferrer") : undefined}>${r.number}</span>`
                   : ""}
               </div>
               ${r.event
-                ? html`<div class="row-event ${clickable ? "linky" : ""}" title=${r.eventRaw || ""} @click=${clickable ? () => window.open(r.url, "_blank") : undefined}>${r.event}</div>`
+                ? html`<div class="row-event ${clickable ? "linky" : ""}" title=${r.eventRaw || ""} @click=${clickable ? () => window.open(r.url, "_blank", "noopener,noreferrer") : undefined}>${r.event}</div>`
                 : ""}
               ${r.retailer
                 ? html`<div class="row-retailer"><ha-icon icon="mdi:storefront-outline"></ha-icon><span>${r.retailer}</span></div>`
@@ -1315,7 +1315,7 @@ class MailAndPackagesCard extends LitElement {
     const meta = carrierMeta(item.carrier);
     const label = item.number || item.order || "";
     const clickable = Boolean(item.number || item.order);
-    const open = clickable ? () => window.open(meta.url(item.number), "_blank") : undefined;
+    const open = clickable ? () => window.open(meta.url(item.number), "_blank", "noopener,noreferrer") : undefined;
     // Only real 17track-tracked numbers carry an event history -- Amazon
     // orders and pre-history-feature backfilled entries won't, so the
     // Details link only shows up when there's actually something to show.
