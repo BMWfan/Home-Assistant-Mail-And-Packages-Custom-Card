@@ -521,6 +521,7 @@ class MailAndPackagesCard extends LitElement {
 
   _etaDay(raw, t) {
     const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return "";
     const today = new Date();
     const diff = Math.round(
       (new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(today.getFullYear(), today.getMonth(), today.getDate())) / 86400000,
@@ -696,6 +697,8 @@ class MailAndPackagesCard extends LitElement {
     for (const d of details) {
       const meta = carrierMeta(d.carrier);
       const statusKey = d.status && STATUS_KIND[d.status] ? d.status : "unknown";
+      const etaRaw = d.estimated_delivery && d.status !== "Delivered" ? new Date(d.estimated_delivery) : null;
+      const etaDate = etaRaw && !Number.isNaN(etaRaw.getTime()) ? etaRaw : null;
       rows.push({
         key: `u-${d.number}`,
         badge: STATUS_KIND[d.status] === "out" && (meta.logo === "dhl" || TRUCK_VAN_LOGOS.has(meta.logo)) ? { ...meta, overlayTruck: true } : meta,
@@ -709,11 +712,8 @@ class MailAndPackagesCard extends LitElement {
         // 17track's official ETA (a "by" deadline, not a from/to window --
         // "from" is unset on every carrier observed live). Irrelevant once
         // delivered, so only kept for in-transit/out-for-delivery rows.
-        eta:
-          d.estimated_delivery && d.status !== "Delivered"
-            ? new Date(d.estimated_delivery).toLocaleTimeString(this.hass.locale?.language || "de", { hour: "2-digit", minute: "2-digit" })
-            : "",
-        etaDay: d.estimated_delivery && d.status !== "Delivered" ? this._etaDay(d.estimated_delivery, t) : "",
+        eta: etaDate ? etaDate.toLocaleTimeString(this.hass.locale?.language || "de", { hour: "2-digit", minute: "2-digit" }) : "",
+        etaDay: etaDate ? this._etaDay(etaDate, t) : "",
         number: d.number,
         url: meta.url(d.number),
         history: d.history || [],
@@ -1144,7 +1144,7 @@ class MailAndPackagesCard extends LitElement {
                   : ""}
               `}
         </div>
-        <div class="row-body">
+        <div class="row-body ${r.eta && r.etaDay ? (r.location || r.time || r.history.length ? "eta2" : "eta2-solo") : ""}">
           <div class="row-content">
             <div class="row-main">
               <div class="row-top">
@@ -1687,6 +1687,12 @@ class MailAndPackagesCard extends LitElement {
       .row-eta-2 {
         align-items: flex-start;
         height: 0;
+      }
+      .eta2-solo .row-eta-2 {
+        height: auto;
+      }
+      .eta2 .row-meta {
+        padding-right: 90px;
       }
       .row-eta-box {
         display: inline-flex;
