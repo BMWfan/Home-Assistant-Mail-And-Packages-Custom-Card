@@ -1,4 +1,4 @@
-/* Mail and Packages Card v1.0.0
+/* Mail and Packages Card v1.0.1
  * Shipment-list card for the Mail and Packages integration.
  * Entities are discovered automatically from the entity registry
  * (platform "mail_and_packages") - no manual entity config needed.
@@ -9,7 +9,7 @@ const LitElement = customElements.get("hui-masonry-view")
 const html = LitElement.prototype.html;
 const css = LitElement.prototype.css;
 
-const CARD_VERSION = "1.0.0";
+const CARD_VERSION = "1.0.1";
 
 // Monochrome carrier logos (simple-icons, CC0/MIT), rendered in brand colors.
 const CARRIER_LOGOS = {
@@ -42,7 +42,7 @@ const STRINGS = {
     in_transit: "unterwegs",
     out_for_delivery: "in Zustellung",
     delivered_today: "heute",
-    eta_by: (t) => `bis ${t} Uhr`,
+    eta_by: (t, day) => `${day ? `${day} ` : ""}bis ${t} Uhr`,
     letters: "Briefe",
     letters_today: (n) => (n === 1 ? "1 Brief kommt heute" : `${n} Briefe kommen heute`),
     letters_tomorrow: (n) => (n === 1 ? "1 Brief kommt morgen" : `${n} Briefe kommen morgen`),
@@ -166,7 +166,7 @@ const STRINGS = {
     in_transit: "in transit",
     out_for_delivery: "out for delivery",
     delivered_today: "today",
-    eta_by: (t) => `by ${t}`,
+    eta_by: (t, day) => `${day ? `${day} ` : ""}by ${t}`,
     letters: "letters",
     letters_today: (n) => (n === 1 ? "1 letter arriving today" : `${n} letters arriving today`),
     letters_tomorrow: (n) => (n === 1 ? "1 letter arriving tomorrow" : `${n} letters arriving tomorrow`),
@@ -519,6 +519,20 @@ class MailAndPackagesCard extends LitElement {
     return this._parseLetterDate(raw).toLocaleDateString(this.hass.locale?.language || "de", { day: "numeric", month: "short" });
   }
 
+  _etaDay(raw, t) {
+    const d = new Date(raw);
+    const today = new Date();
+    const diff = Math.round(
+      (new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(today.getFullYear(), today.getMonth(), today.getDate())) / 86400000,
+    );
+    if (diff === 0) return "";
+    if (diff === 1) return t.tomorrow;
+    return d.toLocaleDateString(
+      this.hass.locale?.language || "de",
+      t === STRINGS.de ? { weekday: "short", day: "2-digit", month: "2-digit" } : { weekday: "short", day: "numeric", month: "short" },
+    );
+  }
+
   // ── actions ────────────────────────────────────────────────────────────
   _moreInfo(entityId) {
     if (entityId) fireEvent(this, "hass-more-info", { entityId });
@@ -699,6 +713,7 @@ class MailAndPackagesCard extends LitElement {
           d.estimated_delivery && d.status !== "Delivered"
             ? new Date(d.estimated_delivery).toLocaleTimeString(this.hass.locale?.language || "de", { hour: "2-digit", minute: "2-digit" })
             : "",
+        etaDay: d.estimated_delivery && d.status !== "Delivered" ? this._etaDay(d.estimated_delivery, t) : "",
         number: d.number,
         url: meta.url(d.number),
         history: d.history || [],
@@ -1150,7 +1165,16 @@ class MailAndPackagesCard extends LitElement {
             </div>
             <div class="row-side">
               <span class="status ${r.kind}">${r.statusText}</span>
-              ${r.eta ? html`<span class="row-eta"><ha-icon icon="mdi:clock-outline"></ha-icon>${t.eta_by(r.eta)}</span>` : ""}
+              ${r.eta
+                ? r.etaDay
+                  ? html`<span class="row-eta row-eta-2"
+                      ><span class="row-eta-box"
+                        ><ha-icon icon="mdi:clock-outline"></ha-icon
+                        ><span class="row-eta-text"><span>${r.etaDay}</span><span>${t.eta_by(r.eta)}</span></span></span
+                      ></span
+                    >`
+                  : html`<span class="row-eta"><ha-icon icon="mdi:clock-outline"></ha-icon>${t.eta_by(r.eta)}</span>`
+                : ""}
             </div>
           </div>
           ${r.location || r.time || r.history.length
@@ -1234,7 +1258,7 @@ class MailAndPackagesCard extends LitElement {
           ? html`<div class="tl-item tl-virtual" style="--tl-fill:${fill}%">
               <span class="tl-dot tl-dot-pulse"></span>
               <div class="tl-row">
-                <span class="tl-date">${r.eta ? t.eta_by(r.eta) : t.status[nextStatus]}</span>
+                <span class="tl-date">${r.eta ? t.eta_by(r.eta, r.etaDay) : t.status[nextStatus]}</span>
               </div>
             </div>`
           : ""}
@@ -1659,6 +1683,20 @@ class MailAndPackagesCard extends LitElement {
         font-size: 0.68em;
         color: var(--secondary-text-color);
         white-space: nowrap;
+      }
+      .row-eta-2 {
+        align-items: flex-start;
+        height: 0;
+      }
+      .row-eta-box {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+      }
+      .row-eta-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
       }
       .row-title {
         cursor: pointer;
