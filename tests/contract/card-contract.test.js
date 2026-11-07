@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createHassFixture, createNoDataFixture } from "../fixtures/hass-fixtures.js";
+import {
+  createHassFixture,
+  createNoDataFixture,
+} from "../fixtures/hass-fixtures.js";
 
 const Card = () => customElements.get("mail-and-packages-card");
 
@@ -43,9 +46,16 @@ describe("mail-and-packages-card contract", () => {
     const t = card._t();
     const { rows, unmatched } = card._shipments(card._entities(), t);
 
-    expect(rows.some((row) => row.number === "00340434161094000001")).toBe(true);
+    expect(rows.some((row) => row.number === "00340434161094000001")).toBe(
+      true,
+    );
     expect(rows.some((row) => row.code === "654321")).toBe(true);
-    expect(rows.some((row) => row.photo === "/api/camera_proxy/camera.mail_amazon_delivery_camera")).toBe(true);
+    expect(
+      rows.some(
+        (row) =>
+          row.photo === "/api/camera_proxy/camera.mail_amazon_delivery_camera",
+      ),
+    ).toBe(true);
     expect(unmatched).toEqual([]);
   });
 
@@ -56,10 +66,16 @@ describe("mail-and-packages-card contract", () => {
     await card.updateComplete;
 
     const root = card.shadowRoot;
-    expect(root.querySelector("button.iconbtn[title='Scan now']")).not.toBeNull();
+    expect(
+      root.querySelector("button.iconbtn[title='Scan now']"),
+    ).not.toBeNull();
     expect(root.textContent).toContain("654321");
     expect(root.textContent).toContain("HUB-77");
-    expect(root.querySelector(".letters-grid .letter img[src='/api/image/letter-1.jpg']")).not.toBeNull();
+    expect(
+      root.querySelector(
+        ".letters-grid .letter img[src='/local/mail_and_packages/letter-1.jpg']",
+      ),
+    ).not.toBeNull();
   });
 
   it("renders localized labels for EN and DE", async () => {
@@ -91,8 +107,13 @@ describe("mail-and-packages-card contract", () => {
     hass.callService = vi.fn();
     const card = createCard(hass);
 
-    card._scan({ stopPropagation() {}, currentTarget: { querySelector: () => null } });
+    card._scan({
+      stopPropagation() {},
+      currentTarget: { querySelector: () => null },
+    });
 
-    expect(hass.callService).toHaveBeenCalledWith("button", "press", { entity_id: "button.mail_scan_now" });
+    expect(hass.callService).toHaveBeenCalledWith("button", "press", {
+      entity_id: "button.mail_scan_now",
+    });
   });
 });

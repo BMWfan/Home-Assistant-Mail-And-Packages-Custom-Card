@@ -1,0 +1,15 @@
+
+> home-assistant-mail-and-packages-custom-card@1.0.1 test:paired
+> playwright test -c tests/paired/playwright.config.mjs
+
+
+Running 2 tests using 1 worker
+
+(node:8099) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/paired/paired.spec.js:8:1 › real Lovelace and companion platform contract (3.5s)
+(node:8181) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [mobile] › tests/paired/paired.spec.js:8:1 › real Lovelace and companion platform contract (10.0s)
+
+  2 passed (15.2s)

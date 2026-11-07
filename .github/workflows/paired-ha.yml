@@ -1,0 +1,66 @@
+name: Disposable paired Home Assistant
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: paired-ha-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  paired:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Monitor runner egress
+        uses: step-security/harden-runner@5c7944e73c4c2a096b17a9cb74d65b6c2bbafbde # v2.9.1
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.21.1
+          cache: npm
+      - run: npm ci && npm run ci
+      - run: npx playwright install --with-deps chromium
+      - name: Prepare fresh config and pinned companion
+        run: python3 tests/paired/prepare.py
+      - name: Check runner Python syntax
+        run: python3 -m compileall -q tests/paired -x runtime
+      - name: Validate fixture producers against pinned integration
+        run: python3 tests/paired/verify-fixtures.py tests/paired/runtime/integration
+      - name: Pull and start pinned HA (loopback only)
+        run: docker compose -p spec003 -f tests/paired/compose.yaml up -d --wait
+      - name: Onboard synthetic owner
+        run: python3 tests/paired/start.py
+      - name: Real Lovelace desktop and mobile
+        run: npm run test:paired
+      - name: Run companion Python suite in the same pinned HA image
+        run: |
+          docker compose -p spec003 -f tests/paired/compose.yaml run --rm --no-deps --entrypoint sh homeassistant -c '
+            cd /config
+            python3 -m venv --system-site-packages /tmp/spec003-tests
+            /tmp/spec003-tests/bin/pip install -r /suite/requirements_test.txt
+            /tmp/spec003-tests/bin/pip install --no-deps pytest-homeassistant-custom-component==0.13.375
+            cp -R /suite /tmp/spec003-suite
+            cd /tmp/spec003-suite
+            /tmp/spec003-tests/bin/python -c "from homeassistant.components import logger; logger._clear_logger_overwrites = lambda hass: None; import pytest; raise SystemExit(pytest.main([\"--disable-socket\", \"--allow-hosts=127.0.0.1,::1,localhost\", \"--junitxml=/config/companion-results.xml\"]))"
+          '
+      - name: Collect sanitized runtime evidence
+        if: always()
+        run: |
+          mkdir -p tests/paired/artifacts
+          docker compose -p spec003 -f tests/paired/compose.yaml logs --no-color > tests/paired/artifacts/ha.log
+          docker image inspect ghcr.io/home-assistant/home-assistant:2026.11.0 --format '{{json .RepoDigests}}' > tests/paired/artifacts/image-digests.json
+          cp tests/paired/runtime/provenance.json tests/paired/artifacts/ || true
+          cp tests/paired/runtime/config/companion-results.xml tests/paired/artifacts/ || true
+      - name: Remove disposable containers and volumes
+        if: always()
+        run: docker compose -p spec003 -f tests/paired/compose.yaml down -v --remove-orphans
+      - name: Upload test evidence (never auth or .storage)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: spec003-evidence
+          path: tests/paired/artifacts/
+          retention-days: 7

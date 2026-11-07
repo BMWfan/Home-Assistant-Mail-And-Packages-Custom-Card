@@ -1,0 +1,15 @@
+{
+  "domain": "spec003",
+  "name": "SPEC-003 disposable test bootstrap",
+  "version": "1.0.0",
+  "documentation": "https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/issues/24",
+  "codeowners": [],
+  "requirements": [],
+  "dependencies": [
+    "sensor",
+    "button",
+    "camera",
+    "recorder",
+    "application_credentials"
+  ]
+}

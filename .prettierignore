@@ -4,3 +4,5 @@ node_modules/
 coverage/
 playwright-report/
 test-results/
+tests/paired/runtime/
+tests/paired/artifacts/

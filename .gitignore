@@ -10,3 +10,8 @@ node_modules/
 test-results/
 playwright-report/
 coverage/
+
+# Disposable paired HA: auth storage and test account never committed/uploaded.
+tests/paired/runtime/
+tests/paired/artifacts/
+**/__pycache__/

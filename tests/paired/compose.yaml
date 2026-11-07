@@ -1,0 +1,22 @@
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:2026.11.0
+    ports:
+      - "127.0.0.1:18123:8123"
+    volumes:
+      - ./runtime/config:/config
+      - ./runtime/integration:/suite:ro
+    restart: "no"
+    environment:
+      TZ: UTC
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python3",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8123/manifest.json', timeout=5)",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 60

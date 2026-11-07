@@ -1,0 +1,6 @@
+{
+  "core": "2026.11.0",
+  "frontend_requirements": ["home-assistant-frontend==20261028.4"],
+  "integration_entry": "01M6VJWQNEG8Q8DS35KWW649NY",
+  "boundary": "synthetic coordinator input; real HA platforms/services"
+}
