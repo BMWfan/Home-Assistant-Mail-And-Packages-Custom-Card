@@ -4,8 +4,14 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
-const srcFile = resolve(root, "src/Home-Assistant-Mail-And-Packages-Custom-Card.js");
-const distFile = resolve(root, "dist/Home-Assistant-Mail-And-Packages-Custom-Card.js");
+const srcFile = resolve(
+  root,
+  "src/Home-Assistant-Mail-And-Packages-Custom-Card.js",
+);
+const distFile = resolve(
+  root,
+  "dist/Home-Assistant-Mail-And-Packages-Custom-Card.js",
+);
 
 const src = readFileSync(srcFile, "utf8");
 const dist = readFileSync(distFile, "utf8");

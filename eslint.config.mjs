@@ -5,7 +5,6 @@ export default [
   {
     ignores: [
       "dist/**",
-      "src/**",
       "node_modules/**",
       "coverage/**",
       "playwright-report/**",
@@ -13,6 +12,13 @@ export default [
     ],
   },
   js.configs.recommended,
+  {
+    files: ["src/**/*.js"],
+    languageOptions: { globals: globals.browser },
+    // Incremental legacy baseline: retain syntax, undefined name and correctness rules.
+    // Unused callback parameters and historical escapes are deferred to a source migration.
+    rules: { "no-unused-vars": "off", "no-useless-escape": "off" },
+  },
   {
     files: ["scripts/**/*.mjs", "tests/**/*.js", "tests/**/*.mjs"],
     languageOptions: {
