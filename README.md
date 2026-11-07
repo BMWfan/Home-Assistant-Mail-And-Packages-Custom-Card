@@ -75,3 +75,44 @@ then register the resource once via Settings > Dashboards > Resources with URL
 ## Requirements
 
 Requires the Mail and Packages integration **v0.6.0 or newer** (letter image URLs and OTP order mapping in sensor attributes).
+
+## Development and CI
+
+### Node version
+
+Use Node.js `22.x` (`.nvmrc` is provided):
+
+```bash
+nvm use
+npm ci
+```
+
+### Local commands
+
+```bash
+npm run lint
+npm run test:contract
+npm run build
+npm run verify:bundle
+npm run verify:metadata
+npm run test:smoke
+```
+
+Combined non-browser validation:
+
+```bash
+npm run ci
+```
+
+### Source and bundle contract
+
+- Canonical tracked source for this repository is `src/Home-Assistant-Mail-And-Packages-Custom-Card.js`.
+- Distributed file for HACS/runtime remains `dist/Home-Assistant-Mail-And-Packages-Custom-Card.js`.
+- `npm run build` performs a deterministic byte-for-byte copy from `src/` to `dist/`.
+- `npm run verify:bundle` and PR CI enforce that `src` and `dist` stay identical.
+
+### Test scope and limitations
+
+- Contract tests (`tests/contract`) validate entity discovery, universal/17TRACK rows, OTP/Amazon Hub handling, scan action wiring, image URL rendering paths, EN/DE text behavior, and theme-variable usage.
+- Smoke tests (`tests/smoke`) run in Playwright with mocked Home Assistant APIs for render/empty/error/details/language/mobile scenarios.
+- These tests do not fully emulate the complete Home Assistant frontend runtime and should be complemented by manual disposable paired integration-card checks.
