@@ -186,3 +186,36 @@ approval. #21 remains open and unmerged; consequently #25 stays stacked on its
 branch. Retargeting to `master` is deferred until that prerequisite is actually
 merged by the owner. Live IMAP, 17TRACK, DHL, external Amazon photos and physical
 devices remain outside the verified scope as agreed with the owner.
+
+## Additional acceptance coverage (2026-11-07)
+
+A further targeted review found that the original single-order OTP scenario
+could not demonstrate correct assignment when several orders exist. The paired
+fixture now has three arriving Amazon orders, two distinct matched OTP codes,
+an arriving order without an OTP, a separate delivered order and an orphan OTP.
+The real HA browser assertions verify each code inside its correct shipment row,
+no code chip for the code-less order, and orphan visibility outside all rows.
+A contract regression shuffles the OTP detail order to reject index-based
+matching as well. The DHL timeline assertion now checks the matching row's
+actual event/location; both DE/EN views verify horizontal row/document overflow.
+
+Executed locally using Node 22.21.1 and the hardened native HA launcher:
+
+- Quality gate passed: **11 contract/tooling tests**, runtime/tooling lint,
+  formatting, build, bundle and metadata checks.
+- Actual HA desktop/mobile projects passed **2/2 in 8.8s**, including the new
+  multi-order, orphan, timeline and overflow assertions; frontend error reports
+  were empty.
+- Negative mutation check: temporarily replace order-specific OTP lookup with
+  the first available code. The new regression fails as expected (exit 1). The
+  bundle is restored in a `finally` block; `verify:bundle` confirms byte equality.
+- Runner Python syntax and `git diff --check` passed.
+
+Retained evidence: [quality gate](evidence/multi-order-ci.txt),
+[real HA run](evidence/multi-order-paired.txt),
+[intentionally rejected OTP mutation](evidence/multi-order-negative.txt),
+[desktop EN](evidence/multi-order-desktop-en.png),
+[mobile DE](evidence/multi-order-mobile-de.png). These are additional synthetic
+coordinator-output acceptance checks, not live carrier/mailbox verification.
+#21 remains unmerged and #25 remains stacked; no merge/release or live tests
+were performed. The native HA instance was stopped after evidence collection.

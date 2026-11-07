@@ -62,18 +62,28 @@ views:
         letters_expanded: true
 ''')
 data = {
-    "universal_packages": 1, "zpackages_transit": 1, "zpackages_delivered": 1,
+    "universal_packages": 1, "zpackages_transit": 4, "zpackages_delivered": 1,
     "universal_tracking_details": [{
         "number": "00340434161094000001", "carrier": "dhl", "status": "OutForDelivery",
         "source": "17track", "last_event": "Out for delivery", "last_location": "Berlin",
         "last_update": "2026-11-07T10:00:00+00:00", "estimated_delivery": "2026-11-07T18:00:00+00:00",
         "history": [{"time": "2026-11-07T10:00:00+00:00", "description": "Out for delivery", "location": "Berlin"}]
     }],
-    "amazon_packages": 1, "amazon_delivered": 1, "amazon_hub": 1, "amazon_otp": 1,
-    "amazon_order": ["111-2222222-3333333"], "amazon_delivered_orders": ["111-2222222-3333333"],
-    "amazon_order_tracking": {"111-2222222-3333333": "TBA123456789"},
-    "amazon_hub_code": ["HUB-77"], "amazon_otp_code": ["654321"],
-    "amazon_otp_details": [{"order": "111-2222222-3333333", "code": "654321"}],
+    "amazon_packages": 3, "amazon_delivered": 1, "amazon_hub": 1, "amazon_otp": 3,
+    "amazon_order": ["111-2222222-3333333", "222-3333333-4444444", "333-4444444-5555555"],
+    "amazon_delivered_orders": ["444-5555555-6666666"],
+    "amazon_order_tracking": {
+        "111-2222222-3333333": "TBA123456789",
+        "222-3333333-4444444": "TBA987654321",
+        "333-4444444-5555555": "TBA555555555",
+        "444-5555555-6666666": "TBA444444444",
+    },
+    "amazon_hub_code": ["HUB-77"], "amazon_otp_code": ["654321", "123456", "999888"],
+    "amazon_otp_details": [
+        {"order": "111-2222222-3333333", "code": "654321"},
+        {"order": "222-3333333-4444444", "code": "123456"},
+        {"order": "555-6666666-7777777", "code": "999888"},
+    ],
     "dhl_brief_anzahl": 1,
     "dhl_brief_letters": [{"id": "spec003", "date": "2026-11-07", "image_path": "/config/www/mail_and_packages/letter.svg"}],
     "packages_history": 0, "packages_history_details": [],

@@ -109,12 +109,40 @@ test("real Lovelace and companion platform contract", async ({
   expect(http.revert_at).toBeNull();
   if (http.stable.server_port === 18123)
     expect(http.stable.server_host).toEqual(["127.0.0.1"]);
-  await expect(card).toContainText("00340434161094000001");
-  await expect(card).toContainText("TBA123456789");
-  await expect(card).toContainText("654321");
-  await expect(card).toContainText("HUB-77");
-  await card.locator(".row-meta .meta-link").first().click();
-  await expect(card.locator(".timeline").first()).toBeVisible();
+  const rowFor = (tracking) =>
+    card
+      .locator(".row")
+      .filter({ has: page.locator(".row-num", { hasText: tracking }) });
+  const firstAmazon = rowFor("TBA123456789");
+  const secondAmazon = rowFor("TBA987654321");
+  const noOtpAmazon = rowFor("TBA555555555");
+  await expect(firstAmazon.locator(".codechip .codebar-code")).toHaveText(
+    "654321",
+  );
+  await expect(secondAmazon.locator(".codechip .codebar-code")).toHaveText(
+    "123456",
+  );
+  await expect(noOtpAmazon).toBeVisible();
+  await expect(noOtpAmazon.locator(".codechip")).toHaveCount(0);
+  await expect(
+    rowFor("TBA444444444").locator(".status.delivered"),
+  ).toBeVisible();
+  // Orphan OTP remains visible outside shipment rows, distinct from Hub pickup.
+  await expect(
+    card.locator(".codebar").filter({ hasText: "999888" }),
+  ).toBeVisible();
+  await expect(card.locator(".row .codebar-code")).toHaveText([
+    "654321",
+    "123456",
+  ]);
+  await expect(
+    card.locator(".codebar").filter({ hasText: "HUB-77" }),
+  ).toBeVisible();
+  const dhl = rowFor("00340434161094000001");
+  await dhl.locator(".row-meta .meta-link").click();
+  await expect(dhl.locator(".timeline")).toBeVisible();
+  await expect(dhl.locator(".timeline")).toContainText("Out for delivery");
+  await expect(dhl.locator(".timeline")).toContainText("Berlin");
   const image = card.locator(".letters-grid img").first();
   await expect(image).toBeVisible();
   await expect(image).toHaveAttribute(
@@ -165,6 +193,19 @@ test("real Lovelace and companion platform contract", async ({
       language === "de" ? "unterwegs" : "in transit",
     );
     await expect(page.locator("#ha-launch-screen")).toBeHidden();
+    const rowWidths = await card.locator(".row").evaluateAll((rows) =>
+      rows.map((row) => ({
+        client: row.clientWidth,
+        scroll: row.scrollWidth,
+      })),
+    );
+    for (const width of rowWidths)
+      expect(width.scroll).toBeLessThanOrEqual(width.client + 1);
+    const documentWidth = await page.evaluate(() => ({
+      scroll: document.documentElement.scrollWidth,
+      viewport: window.innerWidth,
+    }));
+    expect(documentWidth.scroll).toBeLessThanOrEqual(documentWidth.viewport);
     await page.screenshot({
       path: `tests/paired/artifacts/${testInfo.project.name}-${language}.png`,
       fullPage: true,

@@ -56,7 +56,8 @@ The minimal config includes recorder because the real frontend calls
 
 The browser logs into actual HA and opens a YAML Lovelace dashboard with the
 card registered as a module resource. It checks entity-registry discovery,
-universal/17TRACK-shaped timeline content, Amazon tracking/OTP/Hub, a successfully
+universal/17TRACK-shaped timeline content, Amazon tracking/OTP/Hub (three arriving orders with two distinct matched codes,
+an order without a code, a separate delivered order and an orphan code), a successfully
 loaded `/local/` letter image, the scan control, DE/EN, viewport width and browser
 errors on desktop and Pixel 7 emulation. There is no `window.mountCard` or fake
 `hui-view` in this paired test.
@@ -115,3 +116,8 @@ Native camera optimization optionally needs the
 OS `libturbojpeg` library; a missing library is recorded separately from letter
 preview loading. The local execution used the companion's Python test venv
 instead of a second venv; Core/frontend versions are recorded in verification.
+
+The OTP contract regression deliberately shuffles detail order and checks each
+tracking-number/code pair. The actual HA test scopes assertions to individual
+shipment rows and keeps the orphan code outside those rows. It also checks the
+DHL timeline's event/location and horizontal row/document overflow in DE/EN.

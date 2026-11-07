@@ -18,3 +18,7 @@
 - [x] Verify native safety guards, actual native HA and synchronized card suites.
 - [ ] Retarget #25 after #21 is actually merged by the owner (prerequisite still open).
 - [ ] Live-account validation (owner confirmed no isolated test accounts; leave unverified).
+
+- [x] Add multi-order OTP assignment, missing/orphan code, distinct delivered order and matching timeline assertions.
+- [x] Check DE/EN row and document overflow on actual desktop/mobile HA.
+- [x] Prove the OTP regression rejects an intentionally wrong lookup and restore the unchanged bundle.
