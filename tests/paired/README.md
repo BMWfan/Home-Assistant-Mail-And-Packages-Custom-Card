@@ -99,17 +99,19 @@ python3 tests/paired/prepare.py --local
 uv venv --python 3.14 tests/paired/runtime/venv
 uv pip install --python tests/paired/runtime/venv/bin/python homeassistant==2026.11.0
 # Keep this process in a dedicated terminal; stop it after the browser tests.
-tests/paired/runtime/venv/bin/hass -c tests/paired/runtime/config --log-no-color
+tests/paired/runtime/venv/bin/python tests/paired/run-native.py
 # In another terminal, immediately onboard and run the tests:
 python3 tests/paired/start.py
 npm run test:paired
 ```
 
-The generated `--local` configuration binds only `127.0.0.1:18123`. HA 2026.11
-asks to confirm custom HTTP settings; the paired browser test confirms that
-fresh disposable configuration. Run onboarding/tests immediately after startup;
-if they fail, stop HA promptly rather than allowing its five-minute HTTP trial
-to revert to default settings. Native camera optimization optionally needs the
+The native launcher accepts only a fresh config marked by `prepare.py --local`.
+It validates settings through the pinned HA's own HTTP schema and seeds a stable
+`127.0.0.1:18123` configuration before HA starts. There is no pending HTTP trial,
+rollback timer or default all-interface fallback; used `.storage` is rejected.
+Start through this launcher, not the bare `hass` entry point. The paired tests
+assert that the HTTP configuration has no pending trial or scheduled revert.
+Native camera optimization optionally needs the
 OS `libturbojpeg` library; a missing library is recorded separately from letter
 preview loading. The local execution used the companion's Python test venv
 instead of a second venv; Core/frontend versions are recorded in verification.

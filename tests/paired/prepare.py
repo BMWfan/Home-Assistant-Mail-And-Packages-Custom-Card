@@ -51,7 +51,8 @@ lovelace:
 ''')
 if args.local:
     yaml = config / "configuration.yaml"
-    yaml.write_text(yaml.read_text().replace("http:\n", "http:\n  server_host: 127.0.0.1\n  server_port: 18123\n"))
+    yaml.write_text(yaml.read_text().replace("http:\n", ""))
+    (config / ".spec003-native").touch()
 (config / "ui-lovelace.yaml").write_text('''title: SPEC-003
 views:
   - title: Packages

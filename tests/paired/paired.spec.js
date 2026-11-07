@@ -9,6 +9,30 @@ test("real Lovelace and companion platform contract", async ({
   page,
   request,
 }, testInfo) => {
+  const scanCalls = [];
+  page.on("websocket", (socket) => {
+    const calls = new Map();
+    socket.on("framesent", ({ payload }) => {
+      const message = JSON.parse(String(payload));
+      if (
+        message.type === "call_service" &&
+        message.domain === "button" &&
+        message.service === "press"
+      ) {
+        const call = {
+          entityId:
+            message.service_data?.entity_id ?? message.target?.entity_id,
+        };
+        calls.set(message.id, call);
+        scanCalls.push(call);
+      }
+    });
+    socket.on("framereceived", ({ payload }) => {
+      const message = JSON.parse(String(payload));
+      if (message.type === "result" && calls.has(message.id))
+        calls.get(message.id).success = message.success;
+    });
+  });
   const errors = [];
   const errorFile = `tests/paired/artifacts/frontend-errors-${testInfo.project.name}.json`;
   const saveErrors = () =>
@@ -71,9 +95,16 @@ test("real Lovelace and companion platform contract", async ({
   const card = page.locator("mail-and-packages-card");
   await expect(card).toBeVisible();
   await expect(page.locator("#ha-launch-screen")).toBeHidden();
-  // Native HA's first custom bind/port starts a disposable HTTP trial.
-  const confirm = page.getByRole("button", { name: "Confirm", exact: true });
-  if (await confirm.isVisible()) await confirm.click();
+  // A native run must have stable loopback settings with no pending trial.
+  const http = await page.evaluate(() =>
+    document
+      .querySelector("home-assistant")
+      .hass.callWS({ type: "http/config" }),
+  );
+  expect(http.pending).toBeNull();
+  expect(http.revert_at).toBeNull();
+  if (http.stable.server_port === 18123)
+    expect(http.stable.server_host).toEqual(["127.0.0.1"]);
   await expect(card).toContainText("00340434161094000001");
   await expect(card).toContainText("TBA123456789");
   await expect(card).toContainText("654321");
@@ -86,9 +117,9 @@ test("real Lovelace and companion platform contract", async ({
     "src",
     /\/local\/mail_and_packages\/letter.svg/,
   );
-  expect(await image.evaluate((el) => el.complete && el.naturalWidth > 0)).toBe(
-    true,
-  );
+  await expect
+    .poll(() => image.evaluate((el) => el.complete && el.naturalWidth > 0))
+    .toBe(true);
   const count = async () =>
     Number(
       (
@@ -99,20 +130,26 @@ test("real Lovelace and companion platform contract", async ({
         ).json()
       ).state,
     );
-  const before = await count();
-  await card.locator('button[title="Scan now"]').click();
-  await expect.poll(count, { timeout: 30_000 }).toBeGreaterThan(before);
-  // Verify discovery came from actual HA's registry rather than injected hass.
   const registry = await page.evaluate(async () => {
     const ha = document.querySelector("home-assistant");
     return ha.hass.callWS({ type: "config/entity_registry/list" });
   });
-  expect(
-    registry.some(
-      (e) =>
-        e.platform === "mail_and_packages" && e.entity_id.includes("scan_now"),
-    ),
-  ).toBe(true);
+  const scanEntities = registry.filter(
+    (e) =>
+      e.platform === "mail_and_packages" &&
+      e.entity_id.includes("scan_now") &&
+      !e.disabled_by,
+  );
+  expect(scanEntities).toHaveLength(1);
+  const before = await count();
+  await card.locator('button[title="Scan now"]').click();
+  await expect.poll(() => scanCalls.length).toBe(1);
+  const target = scanCalls[0].entityId;
+  expect(Array.isArray(target) ? target : [target]).toEqual([
+    scanEntities[0].entity_id,
+  ]);
+  await expect.poll(() => scanCalls[0].success).toBe(true);
+  await expect.poll(count, { timeout: 30_000 }).toBeGreaterThan(before);
   for (const language of ["de", "en"]) {
     await page.evaluate(
       (language) =>

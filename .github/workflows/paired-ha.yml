@@ -31,6 +31,12 @@ jobs:
         run: python3 tests/paired/verify-fixtures.py tests/paired/runtime/integration
       - name: Pull and start pinned HA (loopback only)
         run: docker compose -p spec003 -f tests/paired/compose.yaml up -d --wait
+      - name: Check native launch exposure/reuse guards in pinned HA
+        run: |
+          docker compose -p spec003 -f tests/paired/compose.yaml run --rm --no-deps \
+            -v "$PWD/tests/paired/run-native.py:/native/run-native.py:ro" \
+            -v "$PWD/tests/paired/test_native.py:/native/test_native.py:ro" \
+            --entrypoint python3 homeassistant /native/test_native.py
       - name: Onboard synthetic owner
         run: python3 tests/paired/start.py
       - name: Real Lovelace desktop and mobile
