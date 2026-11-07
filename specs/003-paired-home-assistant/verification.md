@@ -94,12 +94,25 @@ They are retained in local runtime logs; the successful letter test decodes the
 synthetic preview directly. HA's onboarding also created optional default
 integrations; no production sources were configured.
 
-**Docker runtime and hosted GitHub Actions execution remain unverified here.**
+**Hosted Docker validation subsequently passed** on tested source revision
+`798dde57395e0e7c4b97c6cd1032fc68981ce3e7`:
+[paired HA run 42399639592](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/actions/runs/42399639592)
+and [card CI run 42399639503](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/actions/runs/42399639503).
+Actual Docker Lovelace desktop/mobile: **2 passed in 14.1s**. Companion in the
+same HA image: **663 passed**, 18 warnings, 23.00s, **90.37% coverage**.
+All setup, producer validation, browser checks, suite, artifact upload and
+container/volume cleanup steps succeeded. The
+[hosted evidence artifact](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/actions/runs/42399639592/artifacts/13585126917)
+contains exact image digest, source provenance, running Core/frontend versions,
+console reports, screenshots, HA logs and JUnit results; it expires 2026-11-14.
+Artifact archive digest:
+`sha256:ddc8db89e46d205b59005def2e0840324cc50f9e4d8bc7bf56f46becc4d793d1`.
+
 The Docker daemon's storage differs from the workspace filesystem, which still
 had space; no daemon data was deleted or storage driver changed. Compose syntax,
 config preparation, Python syntax, source contracts and the real native HA path
 were executed. CI contains unconditional cleanup and explicit artifact selection;
-its Docker path needs a hosted result before being called green.
+its Docker path was subsequently exercised successfully by the hosted run above.
 
 The paired test injects data at the coordinator boundary. Live IMAP/parsing,
 17TRACK API requests, DHL OAuth/image downloads, real Amazon photos, native HA
@@ -121,8 +134,8 @@ and release workflow are unchanged.
 ## Review handoff and retained artifacts
 
 Implementation and tested runner revision:
-`e67706f7e394cd650192d93d57a242247542164a`. The follow-up handoff commit changes
-only this verification record and task completion.
+`e67706f7e394cd650192d93d57a242247542164a`. The follow-up handoff/evidence commits change
+only this verification record, task completion and hosted evidence summary.
 [Draft PR #25](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/pull/25)
 is stacked on open PR #21 and links issue #24. The disposable native HA process
 was stopped after collecting evidence.

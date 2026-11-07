@@ -8,6 +8,6 @@
 - [x] Fix CI ordering, Node minimum, full entry point and real Lit control clicks.
 - [x] Add formatting check and normalize the existing formatting baseline.
 - [x] Execute actual paired HA desktop/mobile checks using native Python after Docker storage failure.
-- [ ] Record hosted paired CI result, runtime frontend version and screenshots.
+- [x] Record successful hosted Docker paired CI, runtime versions, screenshots and companion suite results.
 - [x] Run all available local automated checks and record actual evidence.
 - [x] Create linked [Draft PR #25](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/pull/25); no merge or release.
