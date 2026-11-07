@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mail and Packages Card Harness</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 16px;
+        background: #f2f4f7;
+        font-family: "Segoe UI", "Noto Sans", sans-serif;
+      }
+
+      #app {
+        max-width: 640px;
+      }
+    </style>
+    <script type="module">
+      if (!customElements.get("hui-view")) {
+        const isTemplateResult = (value) =>
+          value && Array.isArray(value.strings) && Array.isArray(value.values);
+
+        const stringifyTemplate = (template) =>
+          template.strings.reduce((acc, chunk, index) => {
+            const value = index < template.values.length ? template.values[index] : "";
+            return `${acc}${chunk}${stringifyValue(value)}`;
+          }, "");
+
+        const stringifyValue = (value) => {
+          if (Array.isArray(value)) return value.map((entry) => stringifyValue(entry)).join("");
+          if (isTemplateResult(value)) return stringifyTemplate(value);
+          if (value === null || value === undefined || value === false) return "";
+          if (typeof value === "function") return "";
+          if (typeof value === "object") return String(value);
+          return String(value);
+        };
+
+        const html = (strings, ...values) => ({ strings, values });
+        const css = (strings, ...values) => ({ cssText: stringifyTemplate({ strings, values }) });
+
+        class HaLitElement extends HTMLElement {
+          constructor() {
+            super();
+            this.attachShadow({ mode: "open" });
+            this.updateComplete = Promise.resolve();
+          }
+
+          connectedCallback() {
+            this.requestUpdate();
+          }
+
+          requestUpdate() {
+            this.updateComplete = Promise.resolve().then(() => {
+              if (!this.shadowRoot || typeof this.render !== "function") return;
+              const rendered = this.render();
+              this.shadowRoot.innerHTML = stringifyValue(rendered);
+            });
+            return this.updateComplete;
+          }
+        }
+
+        HaLitElement.prototype.html = html;
+        HaLitElement.prototype.css = css;
+
+        class HuiView extends HaLitElement {}
+        customElements.define("hui-view", HuiView);
+      }
+
+      const haTags = ["ha-card", "ha-icon", "ha-dialog", "ha-textfield", "ha-switch", "ha-icon-button"];
+      for (const tag of haTags) {
+        if (!customElements.get(tag)) {
+          customElements.define(tag, class extends HTMLElement {});
+        }
+      }
+
+      await import("/dist/Home-Assistant-Mail-And-Packages-Custom-Card.js");
+
+      const CardCtor = customElements.get("mail-and-packages-card");
+      window.__serviceCalls = [];
+
+      window.mountCard = (fixture, config = {}) => {
+        const app = document.getElementById("app");
+        app.innerHTML = "";
+
+        const hass = structuredClone(fixture);
+        hass.callService = (...args) => {
+          window.__serviceCalls.push(args);
+        };
+
+        const card = new CardCtor();
+        card.setConfig(config);
+        card.hass = hass;
+        app.append(card);
+        card.requestUpdate();
+        window.__card = card;
+
+        return card.updateComplete.then(() => ({ mounted: true }));
+      };
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
