@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -23,6 +23,15 @@ if (hacsJson.filename !== expectedFile) {
 if (packageJson.main !== expectedMain) {
   console.error(
     `package.json main must be ${expectedMain}, got ${packageJson.main}`,
+  );
+  process.exit(1);
+}
+
+if (
+  !statSync(resolve(root, expectedMain), { throwIfNoEntry: false })?.isFile()
+) {
+  console.error(
+    `Package entry point does not exist as a file: ${expectedMain}`,
   );
   process.exit(1);
 }
