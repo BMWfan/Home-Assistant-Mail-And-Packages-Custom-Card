@@ -75,3 +75,26 @@ then register the resource once via Settings > Dashboards > Resources with URL
 ## Requirements
 
 Requires the Mail and Packages integration **v0.6.0 or newer** (letter image URLs and OTP order mapping in sensor attributes).
+
+## Contributing
+
+Start with a GitHub issue and use the proportionate S/M/L workflow in
+[AGENTS.md](AGENTS.md); the records for this process change are in
+[SPEC-001](specs/001-sdd-light-workflow/spec.md). Keep changes scoped to an
+issue, open a draft PR, run available checks, request independent review, and
+wait for owner approval before merge. Do not publish or test against production.
+
+Before changing card behavior, review the current stable Home Assistant release
+and relevant frontend deprecations, HACS metadata, and the companion
+[integration](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages)
+contract. Preserve entity discovery, tracking/17TRACK data, OTP and Hub codes,
+driver and letter images, scan controls, themes, and German/English strings, or
+coordinate a compatible change across both repositories. Use the
+[disposable paired-HA setup instructions](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages/blob/feature/docker-devcontainer/HANDOFF.md)
+when integration-level behavior needs manual testing.
+
+This repository currently contains a prebuilt `dist/` bundle but no source
+tree, dependency lockfile, build/lint/test scripts, or pull-request CI
+workflow. Do not assume `npm test` or `npm run build` exists. Run the exact
+applicable checks and record any manual or unavailable verification as
+described in [SPEC-001 verification](specs/001-sdd-light-workflow/verification.md).
