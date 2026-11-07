@@ -10,4 +10,4 @@
 - [x] Execute actual paired HA desktop/mobile checks using native Python after Docker storage failure.
 - [ ] Record hosted paired CI result, runtime frontend version and screenshots.
 - [x] Run all available local automated checks and record actual evidence.
-- [ ] Create linked Draft PR; no merge or release.
+- [x] Create linked [Draft PR #25](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/pull/25); no merge or release.

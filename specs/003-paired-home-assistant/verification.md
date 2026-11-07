@@ -117,3 +117,22 @@ real Lit styles and events; controls are clicked. Build runs before tests; Node
 minimum is 22.12; metadata checks the full `dist/` path; formatting is now gated,
 with the inherited formatting baseline normalized. HACS metadata, runtime version
 and release workflow are unchanged.
+
+## Review handoff and retained artifacts
+
+Implementation and tested runner revision:
+`e67706f7e394cd650192d93d57a242247542164a`. The follow-up handoff commit changes
+only this verification record and task completion.
+[Draft PR #25](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/pull/25)
+is stacked on open PR #21 and links issue #24. The disposable native HA process
+was stopped after collecting evidence.
+
+Retained evidence includes [paired results](evidence/paired-results.json),
+[actual versions](evidence/versions-desktop.json),
+[HA log](evidence/ha-native.txt), [companion pytest](evidence/companion-pytest.txt),
+[card CI](evidence/card-ci.txt), [mock smoke](evidence/card-smoke.txt),
+[input hashes](evidence/input-sha256.json), and desktop/mobile screenshots in both
+languages: [desktop DE](evidence/desktop-de.png),
+[desktop EN](evidence/desktop-en.png), [mobile DE](evidence/mobile-de.png),
+[mobile EN](evidence/mobile-en.png). Generated access/refresh token values were
+checked against the retained artifacts and are absent; auth storage is ignored.
