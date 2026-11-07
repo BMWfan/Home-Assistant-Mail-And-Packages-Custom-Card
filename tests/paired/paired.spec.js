@@ -28,9 +28,13 @@ test("real Lovelace and companion platform contract", async ({
       }
     });
     socket.on("framereceived", ({ payload }) => {
-      const message = JSON.parse(String(payload));
-      if (message.type === "result" && calls.has(message.id))
-        calls.get(message.id).success = message.success;
+      // HA negotiates coalesced messages: one WebSocket frame can contain
+      // several JSON responses, rather than a single response object.
+      const decoded = JSON.parse(String(payload));
+      for (const message of Array.isArray(decoded) ? decoded : [decoded]) {
+        if (message.type === "result" && calls.has(message.id))
+          calls.get(message.id).success = message.success;
+      }
     });
   });
   const errors = [];
@@ -148,7 +152,7 @@ test("real Lovelace and companion platform contract", async ({
   expect(Array.isArray(target) ? target : [target]).toEqual([
     scanEntities[0].entity_id,
   ]);
-  await expect.poll(() => scanCalls[0].success).toBe(true);
+  await expect.poll(() => scanCalls[0].success, { timeout: 30_000 }).toBe(true);
   await expect.poll(count, { timeout: 30_000 }).toBeGreaterThan(before);
   for (const language of ["de", "en"]) {
     await page.evaluate(

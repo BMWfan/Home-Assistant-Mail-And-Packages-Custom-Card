@@ -149,3 +149,40 @@ languages: [desktop DE](evidence/desktop-de.png),
 [desktop EN](evidence/desktop-en.png), [mobile DE](evidence/mobile-de.png),
 [mobile EN](evidence/mobile-en.png). Generated access/refresh token values were
 checked against the retained artifacts and are absent; auth storage is ignored.
+
+## Technical review follow-up (2026-11-07)
+
+The owner requested technical review of #21/#25 and confirmed that no isolated
+live accounts are available. Live tests remain explicitly open. No production
+source was accessed and no merge, release or PR retarget was performed.
+
+The four inline #21 findings were still unresolved on that prerequisite's own
+head, despite being fixed in #25. Fixes were moved into #21 itself, with three
+metadata regression tests added. Its reviewed head is now
+`fb5c7e6dcd8a9208656f490822d79046af850e22`; [hosted CI passed](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/actions/runs/42400777221).
+All four threads were resolved and a technical review comment was submitted.
+#25 incorporates that head using an ordinary merge, with no rewritten history.
+The `card_base_sha` provenance pin now identifies the reviewed prerequisite.
+
+Additional review findings fixed in #25:
+
+| Finding                                                                                              | Correction and validation                                                                                                                                                                                                                                                                                                                               |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Native YAML HTTP settings had a five-minute rollback to defaults if browser confirmation was delayed | New `run-native.py` validates through pinned HA's own schema, seeds stable loopback storage and restricts process-local bind-failure defaults to loopback too. It rejects unmarked and previously used configs. Three guard regressions passed. Actual HA starts via this launcher; both browser projects assert no pending HTTP trial or revert timer. |
+| A rising coordinator counter alone could coincide with an unrelated refresh                          | The browser now observes the actual `button.press` WebSocket request, compares its target with the discovered registry entity, requires the corresponding successful HA response, then checks the refresh counter. HA coalesced response frames are handled.                                                                                            |
+| A visible letter image can still be loading                                                          | Poll image decode completion and positive natural width instead of making a one-time assertion.                                                                                                                                                                                                                                                         |
+
+After these changes, actual native HA desktop/mobile tests passed **2/2 in
+14.6s**, with zero captured frontend errors. The synchronized feature branch
+passed its quality gate with **10 contract/tooling tests** and **8 mock browser
+tests** (3.9s). The native safety guard suite passed **3 tests**. Runtime bundle,
+HACS metadata and release workflow remain unchanged. See retained
+[paired review run](evidence/paired-review.txt),
+[review quality gate](evidence/card-review-ci.txt), and
+[review smoke run](evidence/card-review-smoke.txt).
+
+This is a technical review by the implementing agent, not an independent human
+approval. #21 remains open and unmerged; consequently #25 stays stacked on its
+branch. Retargeting to `master` is deferred until that prerequisite is actually
+merged by the owner. Live IMAP, 17TRACK, DHL, external Amazon photos and physical
+devices remain outside the verified scope as agreed with the owner.

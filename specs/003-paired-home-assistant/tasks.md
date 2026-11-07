@@ -11,3 +11,10 @@
 - [x] Record successful hosted Docker paired CI, runtime versions, screenshots and companion suite results.
 - [x] Run all available local automated checks and record actual evidence.
 - [x] Create linked [Draft PR #25](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/pull/25); no merge or release.
+
+- [x] Review #21 directly, fix its own head and resolve the four original inline findings.
+- [x] Synchronize #25 with the reviewed prerequisite using an ordinary merge.
+- [x] Fix native HTTP rollback exposure, strengthen scan service proof and image-load polling.
+- [x] Verify native safety guards, actual native HA and synchronized card suites.
+- [ ] Retarget #25 after #21 is actually merged by the owner (prerequisite still open).
+- [ ] Live-account validation (owner confirmed no isolated test accounts; leave unverified).
