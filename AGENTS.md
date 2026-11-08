@@ -34,6 +34,9 @@ gate. See [SPEC-001](specs/001-sdd-light-workflow/spec.md) for this policy.
   relevant frontend API deprecations, and the HACS metadata in `hacs.json`.
   The declared minimum version is not proof of compatibility with current
   releases; do not change it without a scoped issue and evidence.
+- The card obtains Lit from frontend-internal `hui-masonry-view`/`hui-view`
+  prototypes. Treat this as a compatibility risk: test each supported stable
+  Core/frontend pair, and do not infer older/newer compatibility from mocks.
 - For HACS-facing changes, review the current HACS metadata requirements and
   verify the configured `filename` exists in `dist/`. JSON parsing alone is
   not HACS validation.
