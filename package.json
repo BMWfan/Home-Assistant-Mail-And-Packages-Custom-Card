@@ -3,10 +3,38 @@
   "version": "1.0.1",
   "description": "Custom Home Assistant card for Mail and Packages integration",
   "main": "dist/Home-Assistant-Mail-And-Packages-Custom-Card.js",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test:contract": "vitest run",
+    "test:smoke": "playwright test",
+    "test": "npm run test:contract",
+    "verify:bundle": "node scripts/verify-bundle-consistency.mjs",
+    "verify:metadata": "node scripts/verify-metadata.mjs",
+    "ci": "npm run build && npm run lint && npm run format:check && npm run test:contract && npm run verify:bundle && npm run verify:metadata",
+    "test:paired": "playwright test -c tests/paired/playwright.config.mjs"
+  },
+  "engines": {
+    "node": ">=22.12.0 <23"
+  },
+  "packageManager": "npm@10.9.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card"
   },
   "author": "BMWfan",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.56.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "http-server": "^14.1.1",
+    "jsdom": "^27.1.0",
+    "lit": "^3.3.1",
+    "prettier": "^3.6.2",
+    "vitest": "^5.1.0"
+  }
 }

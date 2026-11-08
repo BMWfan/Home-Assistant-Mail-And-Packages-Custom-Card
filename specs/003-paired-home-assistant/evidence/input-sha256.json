@@ -1,0 +1,8 @@
+{
+  "src/Home-Assistant-Mail-And-Packages-Custom-Card.js": "aff9f98559114f9467f59f26877255ba667e14a6f439041ef32fb123eb17c485",
+  "tests/paired/start.py": "b4c92aa3010c695153ad5fd217fabe4abf9c466c0932ddec4c837c962ee38551",
+  "tests/paired/prepare.py": "274d11cda7e5f802ca6ee186bcfd3e923c501348456cdd30ca1896b416624201",
+  "tests/paired/verify-fixtures.py": "a77314daf970b4cf06eb49ff8bfe1a80521f617732562d3c967bee07b1c18aeb",
+  "tests/paired/paired.spec.js": "3fb83d362fe935a725b2114610c76c52a22dffa156097fc4204c0a93053071ec",
+  "tests/paired/bootstrap/__init__.py": "a255ec1577bc54c0336fb8171829e1b6df8ba677e00b0e0533af57a92d956a6f"
+}

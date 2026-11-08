@@ -7,10 +7,11 @@ card behavior, release files, or deployment configuration.
 ## Workflow
 
 Use the GitHub-native path: issue → scoped Copilot task → draft PR → available
-CI/checks → independent technical review → owner-approved merge. This
-repository currently has no pull-request CI workflow; do not claim a CI pass
-when no checks ran. The release workflow publishes on pushes to `master`, so
-never merge, publish, or release without explicit owner approval.
+CI/checks → independent technical review → owner-approved merge. PR CI runs quality and mock browser checks; the separate paired-HA workflow
+runs actual Lovelace and integration platforms with synthetic coordinator input.
+Report the exact source revision and checks actually executed. The release
+workflow runs on pushes to `master` and can create a release when its version
+tag is absent; never merge, publish, or release without explicit owner approval.
 
 Apply the NetClaw-inspired `specs/NNN-slug/` convention proportionately:
 
@@ -43,22 +44,30 @@ gate. See [SPEC-001](specs/001-sdd-light-workflow/spec.md) for this policy.
   order mapping and Hub pickup codes; driver-photo and DHL letter image URLs;
   scan button/action; themes; and German/English text. Breaking contract
   changes require explicit cross-repository coordination and versioning.
-- For integration-level manual testing, use a disposable Home Assistant
-  instance with compatible revisions of both repositories, following the
-  integration's
-  [Docker handoff](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages/blob/feature/docker-devcontainer/HANDOFF.md).
-  Use test data and isolated test accounts only. Never use production HA,
-  production data, or production credentials.
+- For integration-level tests, use the fresh, pinned, loopback-only runner in
+  [tests/paired/README.md](tests/paired/README.md), with compatible revisions of
+  both repositories. The companion's historical dev configuration may contain a
+  remote HA mirror; do not load it or its secrets for this task. Use synthetic
+  data and isolated test accounts only, never production HA/data/credentials.
+  Record the coordinator seam and distinguish it from live parser/API tests.
 - Do not merge or deploy autonomously. Significant scope, compatibility
   changes, and final merge require owner approval.
 
 ## Validation
 
-This checkout has a prebuilt JavaScript bundle in `dist/`, but no source tree,
-dependency lockfile, npm scripts, test suite, or pull-request CI workflow.
-Do not invent build or test commands or claim coverage that was not run.
-Choose checks appropriate to the change, use the exact available commands in
-[SPEC-001 verification](specs/001-sdd-light-workflow/verification.md), and
-record manual and unavailable checks separately. Contract changes should be
-reviewed with the companion integration and tested in the disposable paired
-environment when feasible.
+Use Node `>=22.12.0 <23` and locked installs (`npm ci`). Canonical runtime source
+is `src/Home-Assistant-Mail-And-Packages-Custom-Card.js`; `npm run build` copies
+it byte-for-byte into `dist/`, without compiling modular authored source.
+
+- `npm run ci`: copy build before contract tests, source/tooling lint, formatting,
+  contracts and metadata/bundle checks.
+- `npm run test:smoke`: real Lit/styles/events with mocked HA APIs; not actual HA.
+- `npm run test:paired`: actual disposable HA/Lovelace and companion platforms,
+  after the documented runner preparation and onboarding.
+
+Consult [SPEC-002 verification](specs/002-card-test-infrastructure/verification.md)
+and [SPEC-003 verification](specs/003-paired-home-assistant/verification.md) for
+actual results and limitations. Source lint has documented legacy suppressions;
+HACS metadata checks are not HACS acceptance certification. Separate automated,
+manual and unverified checks. No live accounts are currently configured; do not
+claim live IMAP, 17TRACK or DHL verification from synthetic coordinator tests.

@@ -1,0 +1,20 @@
+{
+  "tested_commit": "798dde57395e0e7c4b97c6cd1032fc68981ce3e7",
+  "paired_run_url": "https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/actions/runs/42399639592",
+  "card_ci_run_url": "https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/actions/runs/42399639503",
+  "conclusion": "success",
+  "real_docker_lovelace": {
+    "passed": 2,
+    "seconds": 14.1
+  },
+  "companion_pytest": {
+    "passed": 663,
+    "warnings": 18,
+    "seconds": 23.0,
+    "coverage_percent": 90.37
+  },
+  "cleanup": "success",
+  "artifact_id": 13585126917,
+  "artifact_expires": "2026-11-14",
+  "artifact_sha256": "ddc8db89e46d205b59005def2e0840324cc50f9e4d8bc7bf56f46becc4d793d1"
+}

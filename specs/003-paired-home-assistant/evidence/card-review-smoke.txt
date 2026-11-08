@@ -1,0 +1,26 @@
+
+> home-assistant-mail-and-packages-custom-card@1.0.1 test:smoke
+> playwright test
+
+[WebServer] (node:10589) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:10611) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:10611) [DEP0066] DeprecationWarning: OutgoingMessage.prototype._headers is deprecated
+
+Running 8 tests using 1 worker
+
+(node:10622) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop-chromium] › tests/smoke/card-smoke.spec.js:12:1 › renders shipment rows and shipment details timeline (306ms)
+  ✓  2 [desktop-chromium] › tests/smoke/card-smoke.spec.js:31:1 › renders empty and integration-missing states (166ms)
+  ✓  3 [desktop-chromium] › tests/smoke/card-smoke.spec.js:74:1 › renders DE language labels and mobile viewport (192ms)
+  ✓  4 [desktop-chromium] › tests/smoke/card-smoke.spec.js:97:1 › scan control invokes mocked Home Assistant service (230ms)
+(node:10736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  5 [mobile-chromium] › tests/smoke/card-smoke.spec.js:12:1 › renders shipment rows and shipment details timeline (286ms)
+  ✓  6 [mobile-chromium] › tests/smoke/card-smoke.spec.js:31:1 › renders empty and integration-missing states (159ms)
+  ✓  7 [mobile-chromium] › tests/smoke/card-smoke.spec.js:74:1 › renders DE language labels and mobile viewport (174ms)
+  ✓  8 [mobile-chromium] › tests/smoke/card-smoke.spec.js:97:1 › scan control invokes mocked Home Assistant service (201ms)
+
+  8 passed (3.9s)

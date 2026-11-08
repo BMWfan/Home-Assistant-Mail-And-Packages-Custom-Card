@@ -14,8 +14,9 @@ git diff --check
 
 `node --check` checks JavaScript syntax only; it is not a build or behavior
 test. The JSON commands validate syntax, not HACS acceptance or Home Assistant
-compatibility. There is no source tree, npm script, test suite, or PR CI
-workflow in the audited repository. Do not run or report `npm test`, `npm run
+compatibility. The original baseline audit preceded the source/tooling and CI added by
+PR #21/#25; at that baseline there was no source tree, npm script, test suite
+or PR CI workflow. Do not run or report `npm test`, `npm run
 build`, browser coverage, or CI results unless that infrastructure is added
 and the checks are actually run.
 
@@ -55,3 +56,18 @@ unless it was actually performed.
 - No functional, browser, build, or CI checks were run or claimed. The
   documentation-only change leaves the shipped bundle, HACS metadata,
   package metadata, and release workflow unchanged.
+
+## Reconciliation with SPEC-002/003
+
+PR #19 now builds on the tested SPEC-003 branch (`5d0dcc5`), which contains the
+reviewed SPEC-002 prerequisite. The README merge conflict was resolved by
+preserving the development/test documentation and adding the contributor link.
+`AGENTS.md` now documents the actual source mirror, copy build, Node minimum,
+quality/mock/paired workflows and synthetic-versus-live boundary. Its instructions
+point to the fresh paired runner, not the companion's remote-mirror dev config.
+The original baseline results above are historical, not the current capabilities.
+
+Validation for the reconciled documentation is recorded in the PR description.
+No card runtime, HACS metadata, package version or release workflow change is
+part of this documentation diff relative to its new base. Human review and
+owner merge authorization remain required.
