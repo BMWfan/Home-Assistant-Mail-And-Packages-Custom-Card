@@ -4,7 +4,7 @@ A modern shipment-list card for the [Mail and Packages](https://github.com/BMWfa
 
 <img src="img/card-preview.png" alt="Card preview: shipment list with delivery code, driver photo and letter previews (top), empty state (bottom)" width="470" />
 
-*One card, two states: with shipments and letters (top) and when nothing is pending (bottom). Gray boxes are placeholder images — live they show the actual letter scans and driver photo.*
+_One card, two states: with shipments and letters (top) and when nothing is pending (bottom). Gray boxes are placeholder images — live they show the actual letter scans and driver photo._
 
 Instead of a grid of per-carrier counters, the card shows what actually matters:
 
@@ -27,13 +27,13 @@ type: custom:mail-and-packages-card
 
 ### Options
 
-| Option | Default | Description |
-| --- | --- | --- |
-| `name` | `Post & Pakete` / `Mail & Packages` | Card title |
-| `show_summary` | `true` | Summary chips row |
-| `show_shipments` | `true` | Shipment list |
-| `show_letters` | `true` | Letters row |
-| `letters_expanded` | `false` | Expand letter previews by default |
+| Option             | Default                             | Description                       |
+| ------------------ | ----------------------------------- | --------------------------------- |
+| `name`             | `Post & Pakete` / `Mail & Packages` | Card title                        |
+| `show_summary`     | `true`                              | Summary chips row                 |
+| `show_shipments`   | `true`                              | Shipment list                     |
+| `show_letters`     | `true`                              | Letters row                       |
+| `letters_expanded` | `false`                             | Expand letter previews by default |
 
 Entity auto-discovery can be overridden per key if ever needed
 (`updated`, `universal`, `transit`, `delivered`, `letters`, `amazon`,
@@ -75,3 +75,52 @@ then register the resource once via Settings > Dashboards > Resources with URL
 ## Requirements
 
 Requires the Mail and Packages integration **v0.6.0 or newer** (letter image URLs and OTP order mapping in sensor attributes).
+
+## Development and CI
+
+### Node version
+
+Use Node.js `>=22.12.0 <23` (`.nvmrc` is provided):
+
+```bash
+nvm use
+npm ci
+```
+
+### Local commands
+
+```bash
+npm run lint
+npm run build
+npm run test:contract
+npm run verify:bundle
+npm run verify:metadata
+npm run test:smoke
+```
+
+Combined non-browser validation:
+
+```bash
+npm run ci
+```
+
+### Source and bundle contract
+
+- Canonical tracked source for this repository is `src/Home-Assistant-Mail-And-Packages-Custom-Card.js`.
+- Distributed file for HACS/runtime remains `dist/Home-Assistant-Mail-And-Packages-Custom-Card.js`.
+- `npm run build` performs a deterministic byte-for-byte copy from `src/` to `dist/`.
+- `npm run verify:bundle` and PR CI enforce that `src` and `dist` stay identical.
+
+### Test scope and limitations
+
+- Contract tests (`tests/contract`) validate entity discovery, universal/17TRACK rows, OTP/Amazon Hub handling, scan action wiring, image URL rendering paths, EN/DE text behavior, and theme-variable usage.
+- Smoke tests (`tests/smoke`) run in Playwright with mocked Home Assistant APIs for render/empty/error/details/language/mobile scenarios.
+- These tests do not fully emulate the complete Home Assistant frontend runtime and should be complemented by manual disposable paired integration-card checks.
+
+The copy build mirrors the canonical bundle byte-for-byte; it does not compile
+modular authored source. A source migration remains separate scope. Runtime
+source participates in recommended ESLint correctness checks, with legacy
+unused-variable and unnecessary-escape rules suppressed only for `src/`.
+The smoke harness now uses real Lit styles/events and clicks controls, while
+HA remains mocked. [SPEC-003 / PR #25](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/pull/25)
+adds pinned fixture provenance and actual disposable HA/Lovelace execution.
