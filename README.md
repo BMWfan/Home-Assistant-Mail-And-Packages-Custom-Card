@@ -130,3 +130,12 @@ are in [SPEC-003 verification](specs/003-paired-home-assistant/verification.md).
 modular authored source. A source migration needs a separate approved SPEC.
 Runtime source now participates in ESLint's recommended correctness rules; only
 legacy unused variables and unnecessary escapes are suppressed in `src/`.
+
+## Contributor workflow
+
+Read [AGENTS.md](AGENTS.md) for S/M/L specification requirements, Home Assistant
+compatibility checks and the issue → draft PR → CI → independent review →
+owner-approved merge workflow. [SPEC-001](specs/001-sdd-light-workflow/spec.md)
+defines this guidance. Keep small fixes proportionate and preserve companion
+entity, tracking, OTP/Hub, image, scan, theme and localization contracts.
+The reproducible local commands and paired runner are described above.
