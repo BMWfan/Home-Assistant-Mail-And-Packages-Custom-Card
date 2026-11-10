@@ -1,0 +1,59 @@
+
+> home-assistant-mail-and-packages-custom-card@1.0.1 ci
+> npm run build && npm run lint && npm run format:check && npm run test:contract && npm run verify:bundle && npm run verify:metadata
+
+
+> home-assistant-mail-and-packages-custom-card@1.0.1 build
+> node scripts/build.mjs
+
+Copied /workspace/card/src/Home-Assistant-Mail-And-Packages-Custom-Card.js -> /workspace/card/dist/Home-Assistant-Mail-And-Packages-Custom-Card.js
+
+> home-assistant-mail-and-packages-custom-card@1.0.1 lint
+> eslint .
+
+
+> home-assistant-mail-and-packages-custom-card@1.0.1 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> home-assistant-mail-and-packages-custom-card@1.0.1 test:contract
+> vitest run
+
+
+ RUN  v5.1.0 /workspace/card
+
+stderr | tests/contract/card-contract.test.js
+Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+stdout | tests/contract/card-contract.test.js
+ MAIL-AND-PACKAGES-CARD  v1.0.1 
+
+ ✓ tests/contract/card-contract.test.js (7 tests) 202ms
+stderr | tests/contract/metadata.test.js
+Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+stdout | tests/contract/metadata.test.js
+ MAIL-AND-PACKAGES-CARD  v1.0.1 
+
+ ✓ tests/contract/metadata.test.js (3 tests) 108ms
+
+ Test Files  2 passed (2)
+      Tests  10 passed (10)
+   Start at  18:22:32
+   Duration  1.68s (environment 68%, tests 22%, setup 5%, transform 3%, import 1%, worker 1%)
+
+    Isolate  2 workers spawned · ~594ms startup each (spawn + environment, per file)
+             at least ~594ms faster with isolate: false — reuses workers across files instead of one per file
+
+
+> home-assistant-mail-and-packages-custom-card@1.0.1 verify:bundle
+> node scripts/verify-bundle-consistency.mjs
+
+Bundle consistency OK: src and dist match byte-for-byte.
+
+> home-assistant-mail-and-packages-custom-card@1.0.1 verify:metadata
+> node scripts/verify-metadata.mjs
+
+Metadata contract OK: package main and HACS filename are aligned.

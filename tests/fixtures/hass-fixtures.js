@@ -48,8 +48,16 @@ export function createHassFixture({
       state: "2",
       attributes: {
         letters: [
-          { date: "07.11.2026", image: "/api/image/letter-1.jpg" },
-          { date: "08.11.2026", image: "/api/image/letter-2.jpg" },
+          {
+            id: "letter-1",
+            date: "07.11.2026",
+            image: "/local/mail_and_packages/letter-1.jpg",
+          },
+          {
+            id: "letter-2",
+            date: "08.11.2026",
+            image: "/local/mail_and_packages/letter-2.jpg",
+          },
         ],
       },
     },
@@ -64,6 +72,7 @@ export function createHassFixture({
     "sensor.mail_amazon_packages_delivered": {
       state: "1",
       attributes: {
+        domain: "amazon.de",
         order: ["111-2222222-3333333"],
         tracking: { "111-2222222-3333333": "TBA123456789" },
       },
@@ -71,13 +80,19 @@ export function createHassFixture({
     "sensor.mail_amazon_otp_code": {
       state: "1",
       attributes: {
+        domain: "amazon.de",
+        tracking: { "111-2222222-3333333": "TBA123456789" },
         code: ["654321"],
         details: [{ order: "111-2222222-3333333", code: "654321" }],
       },
     },
     "sensor.mail_amazon_hub_packages": {
       state: "1",
-      attributes: { code: ["HUB-77"] },
+      attributes: {
+        domain: "amazon.de",
+        tracking: { "111-2222222-3333333": "TBA123456789" },
+        code: ["HUB-77"],
+      },
     },
     "camera.mail_amazon_delivery_camera": {
       state: "idle",

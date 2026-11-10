@@ -117,10 +117,16 @@ npm run ci
 - Smoke tests (`tests/smoke`) run in Playwright with mocked Home Assistant APIs for render/empty/error/details/language/mobile scenarios.
 - These tests do not fully emulate the complete Home Assistant frontend runtime and should be complemented by manual disposable paired integration-card checks.
 
-The copy build mirrors the canonical bundle byte-for-byte; it does not compile
-modular authored source. A source migration remains separate scope. Runtime
-source participates in recommended ESLint correctness checks, with legacy
-unused-variable and unnecessary-escape rules suppressed only for `src/`.
-The smoke harness now uses real Lit styles/events and clicks controls, while
-HA remains mocked. [SPEC-003 / PR #25](https://github.com/BMWfan/Home-Assistant-Mail-And-Packages-Custom-Card/pull/25)
-adds pinned fixture provenance and actual disposable HA/Lovelace execution.
+### Disposable paired Home Assistant (SPEC-003)
+
+See [the paired runner](tests/paired/README.md) for pinned revisions, isolation,
+commands and the CI alternative. It uses actual HA/Lovelace and the companion
+entity platforms with synthetic coordinator input. The mock browser harness
+uses real Lit, but remains a mock HA environment. Neither certifies live IMAP,
+DHL or 17TRACK connectivity. Actual execution evidence and open runtime checks
+are in [SPEC-003 verification](specs/003-paired-home-assistant/verification.md).
+
+`npm run build` remains a byte-for-byte source mirror copy, not compilation of
+modular authored source. A source migration needs a separate approved SPEC.
+Runtime source now participates in ESLint's recommended correctness rules; only
+legacy unused variables and unnecessary escapes are suppressed in `src/`.

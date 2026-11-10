@@ -1,0 +1,75 @@
+
+> home-assistant-mail-and-packages-custom-card@1.0.1 test:contract
+> vitest run -t binds each OTP
+
+
+ RUN  v5.1.0 /workspace/card
+
+stdout | tests/contract/card-contract.test.js
+ MAIL-AND-PACKAGES-CARD  v1.0.1 
+
+ ❯ tests/contract/card-contract.test.js (8 tests | 1 failed | 7 skipped) 32ms
+   ❯ mail-and-packages-card contract (8)
+     ↓ discovers integration entities from the registry
+     ↓ falls back to default entity ids when registry is unavailable
+     ↓ builds shipment rows with universal tracking, Amazon OTP and driver image URLs
+     × binds each OTP to its own order and keeps orphan codes separate 29ms
+     ↓ renders scan controls, code bars, and letter preview images
+     ↓ renders localized labels for EN and DE
+     ↓ uses Home Assistant theme variables in styles
+     ↓ triggers scan service calls through Home Assistant API
+stdout | tests/contract/metadata.test.js
+ MAIL-AND-PACKAGES-CARD  v1.0.1 
+
+ ↓ tests/contract/metadata.test.js (3 tests | 3 skipped)
+
+ Test Files  1 failed | 1 skipped (2)
+      Tests  1 failed | 10 skipped (11)
+   Start at  18:58:12
+   Duration  1.47s (environment 80%, transform 10%, setup 5%, tests 3%, import 1%, worker 1%)
+
+    Isolate  2 workers spawned · ~595ms startup each (spawn + environment, per file)
+             at least ~595ms faster with isolate: false — reuses workers across files instead of one per file
+
+stderr | tests/contract/card-contract.test.js
+Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+stderr | tests/contract/metadata.test.js
+Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/contract/card-contract.test.js > mail-and-packages-card contract > binds each OTP to its own order and keeps orphan codes separate
+AssertionError: expected [ [ 'TBA-A', '123456' ], …(2) ] to deeply equal [ [ 'TBA-A', '654321' ], …(2) ]
+
+- Expected
++ Received
+
+  [
+    [
+      "TBA-A",
+-     "654321",
++     "123456",
+    ],
+    [
+      "TBA-B",
+      "123456",
+    ],
+    [
+      "TBA-C",
+-     null,
++     "123456",
+    ],
+  ]
+
+ ❯ tests/contract/card-contract.test.js:81:59
+     79|       (row) => row.title === "Amazon" && row.kind === "transit",
+     80|     );
+     81|     expect(arriving.map((row) => [row.number, row.code])).toEqual([
+       |                                                           ^
+     82|       ["TBA-A", "654321"],
+     83|       ["TBA-B", "123456"],
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

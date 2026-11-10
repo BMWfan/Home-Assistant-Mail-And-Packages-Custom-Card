@@ -59,6 +59,33 @@ describe("mail-and-packages-card contract", () => {
     expect(unmatched).toEqual([]);
   });
 
+  it("binds each OTP to its own order and keeps orphan codes separate", () => {
+    const hass = createHassFixture();
+    hass.states["sensor.mail_amazon_packages"].attributes = {
+      order: ["order-a", "order-b", "order-c"],
+      tracking: { "order-a": "TBA-A", "order-b": "TBA-B", "order-c": "TBA-C" },
+    };
+    hass.states["sensor.mail_amazon_otp_code"].attributes = {
+      code: ["654321", "123456", "999888"],
+      details: [
+        { order: "order-b", code: "123456" },
+        { order: "orphan-order", code: "999888" },
+        { order: "order-a", code: "654321" },
+      ],
+    };
+    const card = createCard(hass);
+    const { rows, unmatched } = card._shipments(card._entities(), card._t());
+    const arriving = rows.filter(
+      (row) => row.title === "Amazon" && row.kind === "transit",
+    );
+    expect(arriving.map((row) => [row.number, row.code])).toEqual([
+      ["TBA-A", "654321"],
+      ["TBA-B", "123456"],
+      ["TBA-C", null],
+    ]);
+    expect(unmatched).toEqual(["999888"]);
+  });
+
   it("renders scan controls, code bars, and letter preview images", async () => {
     const hass = createHassFixture();
     const card = createCard(hass, { letters_expanded: true });
@@ -73,7 +100,7 @@ describe("mail-and-packages-card contract", () => {
     expect(root.textContent).toContain("HUB-77");
     expect(
       root.querySelector(
-        ".letters-grid .letter img[src='/api/image/letter-1.jpg']",
+        ".letters-grid .letter img[src='/local/mail_and_packages/letter-1.jpg']",
       ),
     ).not.toBeNull();
   });

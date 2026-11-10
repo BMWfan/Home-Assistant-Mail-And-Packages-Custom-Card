@@ -1,0 +1,6 @@
+{
+  "integration_repository": "BMWfan/Home-Assistant-Mail-And-Packages",
+  "integration_sha": "d059f3786e33538a34f3a7134f46c74501aa4e16",
+  "card_base_sha": "fb5c7e6dcd8a9208656f490822d79046af850e22",
+  "ha_core": "2026.11.0"
+}

@@ -1,0 +1,443 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.9, pytest-9.2.0, pluggy-1.7.0
+rootdir: /workspace/integration
+configfile: pyproject.toml (WARNING: ignoring pytest config in tox.ini!)
+testpaths: tests
+plugins: anyio-4.16.0, asyncio-1.4.1.post1, syrupy-6.1.1, timeout-2.4.0, platformdirs-4.14.5, aiohttp-1.1.1, requests-mock-1.12.1, xdist-3.8.0, socket-0.8.1, homeassistant-custom-component-0.13.375, respx-0.23.1, cov-7.1.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+timeout: 30.0s
+timeout method: signal
+timeout func_only: False
+collected 663 items
+
+tests/shippers/test_amazon.py ......................................     [  5%]
+tests/shippers/test_dhl_briefankundigung.py ......                       [  6%]
+tests/shippers/test_dpd_gls_international.py ........                    [  7%]
+tests/shippers/test_generic.py ......................................... [ 14%]
+.....                                                                    [ 14%]
+tests/shippers/test_hermes.py ..                                         [ 15%]
+tests/shippers/test_post_de.py .....................                     [ 18%]
+tests/shippers/test_registry.py .                                        [ 18%]
+tests/shippers/test_universal.py ...................                     [ 21%]
+tests/shippers/test_usps.py .........................                    [ 25%]
+tests/test_application_credentials.py .                                  [ 25%]
+tests/test_binary_sensor.py ..                                           [ 25%]
+tests/test_camera.py ................................................... [ 33%]
+........                                                                 [ 34%]
+tests/test_config_flow.py .............................................. [ 41%]
+................................................                         [ 48%]
+tests/test_coordinator.py ....................................           [ 53%]
+tests/test_coordinator_persistence.py .............                      [ 55%]
+tests/test_diagnostics.py ..                                             [ 56%]
+tests/test_helpers.py .......                                            [ 57%]
+tests/test_init.py ......................................                [ 63%]
+tests/test_manifest.py .                                                 [ 63%]
+tests/test_reauth.py ..                                                  [ 63%]
+tests/test_repairs.py ......                                             [ 64%]
+tests/test_sensor.py .............                                       [ 66%]
+tests/test_spec_artifacts.py ....                                        [ 66%]
+tests/tracking/test_seventeen_track.py .........                         [ 68%]
+tests/utils/test_amazon.py ..........................                    [ 72%]
+tests/utils/test_cache.py ......                                         [ 73%]
+tests/utils/test_date.py ...                                             [ 73%]
+tests/utils/test_image.py ........................................       [ 79%]
+tests/utils/test_imap_email.py ......................................... [ 85%]
+.......................................................................  [ 96%]
+tests/utils/test_shipper.py .......................                      [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1507
+  /workspace/integration/.venv/lib/python3.14/site-packages/_pytest/config/__init__.py:1507: PytestAssertRewriteWarning: Module already imported so cannot be rewritten; anyio
+    self._mark_plugins_for_rewrite(hook, disable_autoload)
+
+.venv/lib/python3.14/site-packages/backoff/_decorator.py:201
+  /workspace/integration/.venv/lib/python3.14/site-packages/backoff/_decorator.py:201: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    if asyncio.iscoroutinefunction(target):
+
+.venv/lib/python3.14/site-packages/backoff/_async.py:11
+  /workspace/integration/.venv/lib/python3.14/site-packages/backoff/_async.py:11: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    if asyncio.iscoroutinefunction(coro_or_func):
+
+.venv/lib/python3.14/site-packages/backoff/_async.py:127
+  /workspace/integration/.venv/lib/python3.14/site-packages/backoff/_async.py:127: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    assert not asyncio.iscoroutinefunction(max_tries)
+
+.venv/lib/python3.14/site-packages/backoff/_async.py:128
+  /workspace/integration/.venv/lib/python3.14/site-packages/backoff/_async.py:128: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    assert not asyncio.iscoroutinefunction(jitter)
+
+tests/test_config_flow.py::test_get_schema_step_forwarded_emails_list_to_string
+  tests/test_config_flow.py:3819: PytestWarning: The test <Function test_get_schema_step_forwarded_emails_list_to_string> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_get_schema_step_forwarded_emails_list_to_string():
+
+tests/test_config_flow.py::test_get_schema_step_amazon_hides_fwds_in_header_mode
+  tests/test_config_flow.py:6597: PytestWarning: The test <Function test_get_schema_step_amazon_hides_fwds_in_header_mode> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_get_schema_step_amazon_hides_fwds_in_header_mode():
+
+tests/test_config_flow.py::test_get_schema_step_amazon_shows_fwds_without_header_mode
+  tests/test_config_flow.py:6608: PytestWarning: The test <Function test_get_schema_step_amazon_shows_fwds_without_header_mode> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_get_schema_step_amazon_shows_fwds_without_header_mode():
+
+tests/test_config_flow.py::test_multi_folder_select_validator
+  tests/test_config_flow.py:6673: PytestWarning: The test <Function test_multi_folder_select_validator> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_multi_folder_select_validator():
+
+tests/test_coordinator.py::test_process_emails_batch_success
+  /workspace/integration/custom_components/mail_and_packages/coordinator.py:417: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/test_coordinator.py", line 48, in test_process_emails_batch_success
+      data = await coordinator.process_emails(hass, FAKE_CONFIG_DATA)
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 226, in process_emails
+      shipper_data, account = await self._update_shippers(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 521, in _update_shippers
+      account = await self._prefetch_imap_searches(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 418, in _prefetch_imap_searches
+      shipper_instance.collect_queries(
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    all_queries.extend(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_coordinator.py::test_process_emails_batch_exception
+  /workspace/integration/custom_components/mail_and_packages/coordinator.py:417: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/test_coordinator.py", line 78, in test_process_emails_batch_exception
+      await coordinator.process_emails(hass, FAKE_CONFIG_DATA)
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 226, in process_emails
+      shipper_data, account = await self._update_shippers(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 521, in _update_shippers
+      account = await self._prefetch_imap_searches(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 418, in _prefetch_imap_searches
+      shipper_instance.collect_queries(
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    all_queries.extend(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_coordinator.py::test_process_emails_invalid_return
+  /workspace/integration/custom_components/mail_and_packages/coordinator.py:417: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/test_coordinator.py", line 107, in test_process_emails_invalid_return
+      data = await coordinator.process_emails(hass, FAKE_CONFIG_DATA)
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 226, in process_emails
+      shipper_data, account = await self._update_shippers(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 521, in _update_shippers
+      account = await self._prefetch_imap_searches(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 418, in _prefetch_imap_searches
+      shipper_instance.collect_queries(
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    all_queries.extend(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_coordinator.py::test_process_emails_passes_since_date
+  /workspace/integration/custom_components/mail_and_packages/coordinator.py:417: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/test_coordinator.py", line 511, in test_process_emails_passes_since_date
+      await coordinator.process_emails(hass, config)
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 226, in process_emails
+      shipper_data, account = await self._update_shippers(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 521, in _update_shippers
+      account = await self._prefetch_imap_searches(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 418, in _prefetch_imap_searches
+      shipper_instance.collect_queries(
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    all_queries.extend(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_coordinator.py::test_process_emails_strips_tracking_details_from_output
+  /workspace/integration/custom_components/mail_and_packages/coordinator.py:417: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/test_coordinator.py", line 545, in test_process_emails_strips_tracking_details_from_output
+      data = await coordinator.process_emails(hass, FAKE_CONFIG_DATA)
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 226, in process_emails
+      shipper_data, account = await self._update_shippers(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 521, in _update_shippers
+      account = await self._prefetch_imap_searches(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 418, in _prefetch_imap_searches
+      shipper_instance.collect_queries(
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    all_queries.extend(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_coordinator.py::test_process_emails_merges_tracking_details_from_multiple_shippers
+  /workspace/integration/custom_components/mail_and_packages/coordinator.py:417: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/test_coordinator.py", line 719, in test_process_emails_merges_tracking_details_from_multiple_shippers
+      data = await coordinator.process_emails(hass, config)
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 226, in process_emails
+      shipper_data, account = await self._update_shippers(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 521, in _update_shippers
+      account = await self._prefetch_imap_searches(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 418, in _prefetch_imap_searches
+      shipper_instance.collect_queries(
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    all_queries.extend(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_coordinator.py::test_process_emails_delivered_tracking
+  /workspace/integration/custom_components/mail_and_packages/coordinator.py:417: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/test_coordinator.py", line 766, in test_process_emails_delivered_tracking
+      data = await coordinator.process_emails(hass, config)
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 226, in process_emails
+      shipper_data, account = await self._update_shippers(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 521, in _update_shippers
+      account = await self._prefetch_imap_searches(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 418, in _prefetch_imap_searches
+      shipper_instance.collect_queries(
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    all_queries.extend(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_coordinator.py::test_process_emails_delivered_tracking_reversed_order
+  /workspace/integration/custom_components/mail_and_packages/coordinator.py:417: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/test_coordinator.py", line 813, in test_process_emails_delivered_tracking_reversed_order
+      data = await coordinator.process_emails(hass, config)
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 226, in process_emails
+      shipper_data, account = await self._update_shippers(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 521, in _update_shippers
+      account = await self._prefetch_imap_searches(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 418, in _prefetch_imap_searches
+      shipper_instance.collect_queries(
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    all_queries.extend(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_coordinator.py::test_process_emails_17track_delivered_count_derived
+  /workspace/integration/custom_components/mail_and_packages/coordinator.py:417: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/test_coordinator.py", line 1144, in test_process_emails_17track_delivered_count_derived
+      data = await coordinator.process_emails(hass, config)
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 226, in process_emails
+      shipper_data, account = await self._update_shippers(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 521, in _update_shippers
+      account = await self._prefetch_imap_searches(
+    File "/workspace/integration/custom_components/mail_and_packages/coordinator.py", line 418, in _prefetch_imap_searches
+      shipper_instance.collect_queries(
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    all_queries.extend(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/utils/test_imap_email.py::test_email_search_sequential_fallback
+  /home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/traceback.py:294: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/runners.py", line 128, in run
+      return self._loop.run_until_complete(task)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/utils/test_imap_email.py", line 1313, in test_email_search_multisearch
+      result = await email_search(
+    File "/workspace/integration/custom_components/mail_and_packages/utils/imap.py", line 1043, in email_search
+      uids = await _execute_single_search(account, search)
+    File "/workspace/integration/custom_components/mail_and_packages/utils/imap.py", line 498, in _execute_single_search
+      account.protocol.new_tag(),
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    def __init__(self, filename, lineno, name, *, lookup_line=True,
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/utils/test_imap_email.py::test_execute_single_search_esearch_failure
+  /home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py:50: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/utils/test_imap_email.py", line 1749, in test_execute_single_search_esearch_failure
+      res = await _execute_single_search(mock_account, "ALL")
+    File "/workspace/integration/custom_components/mail_and_packages/utils/imap.py", line 496, in _execute_single_search
+      Command(
+    File "/workspace/integration/.venv/lib/python3.14/site-packages/aioimaplib/aioimaplib.py", line 165, in __init__
+      self._timer = asyncio.Handle(lambda: None, None, self._loop)  # fake timer
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 50, in __init__
+      if self._loop.get_debug():
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    if self._loop.get_debug():
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/utils/test_imap_email.py::test_email_fetch_failures
+  /home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py:495: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/runners.py", line 128, in run
+      return self._loop.run_until_complete(task)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/utils/test_imap_email.py", line 1452, in test_email_search_multisearch_spaced_folder
+      result = await email_search(
+    File "/workspace/integration/custom_components/mail_and_packages/utils/imap.py", line 1043, in email_search
+      uids = await _execute_single_search(account, search)
+    File "/workspace/integration/custom_components/mail_and_packages/utils/imap.py", line 498, in _execute_single_search
+      account.protocol.new_tag(),
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    __dict__['_mock_call_args_list'] = _CallList()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/utils/test_imap_email.py::test_execute_single_search_esearch_timeout_error
+  /home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py:50: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Coroutine created at (most recent call last)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 707, in run_until_complete
+      self.run_forever()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 678, in run_forever
+      self._run_once()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/base_events.py", line 2056, in _run_once
+      handle._run()
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 94, in _run
+      self._context.run(self._callback, *self._args)
+    File "/workspace/integration/tests/utils/test_imap_email.py", line 1979, in test_execute_single_search_esearch_timeout_error
+      await _execute_single_search(mock_imap, "SEARCH_QUERY")
+    File "/workspace/integration/custom_components/mail_and_packages/utils/imap.py", line 496, in _execute_single_search
+      Command(
+    File "/workspace/integration/.venv/lib/python3.14/site-packages/aioimaplib/aioimaplib.py", line 165, in __init__
+      self._timer = asyncio.Handle(lambda: None, None, self._loop)  # fake timer
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/asyncio/events.py", line 50, in __init__
+      if self._loop.get_debug():
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1176, in __call__
+      return self._mock_call(*args, **kwargs)
+    File "/home/agent/.local/share/uv/python/cpython-3.14.9-linux-x86_64-gnu/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+      return self._execute_mock_call(*args, **kwargs)
+    if self._loop.get_debug():
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /workspace/card/tests/paired/artifacts/companion-results.xml -
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.14.9-final-0 ________________
+
+Coverage XML written to file coverage.xml
+Required test coverage of 90.0% reached. Total coverage: 90.41%
+====================== 663 passed, 22 warnings in 32.44s =======================
