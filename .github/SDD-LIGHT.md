@@ -3,6 +3,7 @@
 This is supplementary guidance. AGENTS.md and existing SDD-Light specifications, security, CI, compatibility and explicit owner merge/release approvals take precedence. Never expose real IMAP credentials, private email contents, Home Assistant tokens or production data.
 
 ## Scoped Codex execution
+
 1. Start with the approved issue, affected paths, applicable AGENTS instructions, nearest tests and existing spec. Locate filenames/symbols before reading whole files; expand whenever correctness or security requires it.
 2. Prefer bounded searches, relevant source spans, changed-file diffs and failing test output over repository-wide dumps. Never hide or truncate an error and call a test passing.
 3. Size proportionately: S is a focused issue/PR with evidence; M retains existing spec/checklist; L retains architecture, risk, verification and rollback artifacts required by the repository. No missing documentation to save tokens.
