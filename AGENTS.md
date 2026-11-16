@@ -74,3 +74,8 @@ actual results and limitations. Source lint has documented legacy suppressions;
 HACS metadata checks are not HACS acceptance certification. Separate automated,
 manual and unverified checks. No live accounts are currently configured; do not
 claim live IMAP, 17TRACK or DHL verification from synthetic coordinator tests.
+
+
+## Token-efficient Codex execution
+
+Follow [scoped SDD-Light guidance](.github/SDD-LIGHT.md) for focused retrieval, compact [handoffs](.github/spec-templates/handoff.md) and [actual-token measurement](.github/spec-templates/token-benchmark.md). This supplements all existing specifications, CI, security, cross-repository compatibility and owner release/merge gates; never sacrifice verification to reduce tokens.
